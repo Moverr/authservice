@@ -1,6 +1,8 @@
 server:
   port: 8082
 spring:
+  flyway:
+    baselineOnMigrate: true
   application:
     name: authservice
 #  main:
@@ -12,15 +14,7 @@ spring:
     username: postgres
     password: admin
     driverClassName: org.postgresql.Driver
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL95Dialect
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, prometheus
+
 
 
 
