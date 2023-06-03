@@ -31,6 +31,9 @@ public class Permission extends BaseEntity{
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "resource")
+    private String resource;
+
 
 
 
