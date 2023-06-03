@@ -1,8 +1,36 @@
+server:
+  port: 8082
 spring:
   application:
     name: authservice
-server:
-  port: 8082
+#  main:
+#    banner-mode: off
+  zipkin:
+    enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=dev
+    username: postgres
+    password: admin
+    driverClassName: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
 
 
 
+
+
+#  database:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: foo
+#    password: bar
+#    secret: foo
+#
+#server:
+#  port: 8080
