@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.models.dtos.requests.CustomQueryDTO;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
+import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.services.ProjectService;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Page<ProjectResponseDTO> list(CustomQueryDTO query) {
+    public Page<ProjectResponseDTO> list(SearchRequestDTO query) {
         return null;
     }
 

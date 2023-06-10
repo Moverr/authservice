@@ -40,6 +40,7 @@ public class ProjectsController {
 
            ){
         SearchRequestDTO request = new SearchRequestDTO(query,offset,limit,sortBy,sortType);
+        service.list(request);
         return ResponseEntity.ok(null);
     }
 
