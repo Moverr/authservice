@@ -1,14 +1,9 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kodeinc.authservice.models.entities.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
