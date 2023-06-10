@@ -3,7 +3,11 @@ package com.kodeinc.authservice.controllers;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
+import com.kodeinc.authservice.services.ProjectService;
+import com.kodeinc.authservice.services.impl.ProjectServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,10 +20,13 @@ import java.util.List;
 @Validated
 public class ProjectsController {
 
+
+    @Autowired
+    ProjectServiceImpl service;
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectResponseDTO> create(@RequestBody @Valid ProjectRequestDTO request){
-        ProjectResponseDTO responseDTO =   ProjectResponseDTO.builder().id(12l).build();
-
+        ProjectResponseDTO responseDTO =    service.create(request);
         return  ResponseEntity.ok(responseDTO);
     }
 

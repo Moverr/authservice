@@ -4,7 +4,9 @@ import com.kodeinc.authservice.models.dtos.requests.CustomQueryDTO;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
+@Component
 public interface ProjectService {
 
 
