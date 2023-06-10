@@ -1,9 +1,10 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.models.dtos.requests.CustomQueryDTO;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
+import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
+import com.kodeinc.authservice.models.entities.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -11,15 +12,10 @@ import org.springframework.stereotype.Component;
 public interface ProjectService {
 
 
-
-    //todo: create
-    public ProjectResponseDTO create(ProjectRequestDTO request);
-    //todo: update
-    public ProjectResponseDTO update(long id,ProjectRequestDTO request);
-    //todo: list
-    public Page<ProjectResponseDTO> list(SearchRequestDTO query);
-    //todo: delete
-    public void archive(long id);
+      ProjectResponseDTO create(ProjectRequestDTO request);
+      ProjectResponseDTO update(long id,ProjectRequestDTO request);
+      CustomPage<ProjectResponseDTO> list(SearchRequestDTO query);
+      void archive(long id);
 
 
 }

@@ -28,5 +28,6 @@ public class Project extends BaseEntity{
     @Transient
     private List<Role> roles;
 
+    //todo: status
 
 }
