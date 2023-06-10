@@ -71,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<ProjectResponseDTO> responses  =  projects.stream().map(this::populate).collect(Collectors.toList());
 
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
-        customResponse.setItems(responses);
+        customResponse.setData(responses);
         customResponse.setPageNumber(projects.getNumber());
         customResponse.setPageSize(projects.getSize());
         customResponse.setPageNumber(projects.getNumber());

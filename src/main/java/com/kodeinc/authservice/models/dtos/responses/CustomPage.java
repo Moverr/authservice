@@ -1,6 +1,5 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,5 +12,5 @@ public class CustomPage<T> {
     private long pageSize;
     private long totalElements;
     private long offset;
-    private List<T> items;
+    private List<T> data;
 }
