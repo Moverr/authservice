@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.0'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id "org.flywaydb.flyway" version "9.8.1"
 }
 
 group = 'com.kodeinc'
@@ -43,4 +44,45 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+
+flyway{
+	url = 'jdbc:postgresql://localhost:5432/dev'
+	user = 'postgres'
+	password = 'admin'
+	schemas = ['auth_db']
+	driver = 'org.postgresql.Driver'
+	placeholders = [
+			'keyABC': 'valueXYZ',
+			'otherplaceholder': 'value123'
+	]
+}
+
+//flywayMigrate.dependsOn classes
+//datasource:
+//url: jdbc:postgresql://localhost:5432/dev?currentSchema=auth_db
+//username: postgres
+//password: admin
+
+//classes.dependsOn generateBuildInfo
+
+import java.text.SimpleDateFormat
+task migrate() {
+	doLast {
+		if (!project.hasProperty('fileVersion') || !project.fileVersion) {
+			println("Please Specify File version by passing -PfileVersion=x")
+			return
+		}
+		if (!project.hasProperty('fileName') || !project.fileName) {
+			println("Please Specify File name by passing -PfileName=abc.sql")
+			return
+		}
+		if (!project.fileName.contains(".sql")) {
+			println("Please Specify File name extension by passing -PfileName=abc.sql and ensure the file has a valid .sql extension")
+			return
+		}
+		new File("$projectDir/src/main/resources/db/migration", "V${project.fileVersion}_${new SimpleDateFormat('ddMMyyyyHHmmss').format(new Date())}__${project.fileName}").text = ""
+		println("Generated File with name -> V${project.fileVersion}_${new SimpleDateFormat('ddMMyyyyHHmmss').format(new Date())}__${project.fileName}")
+	}
 }
