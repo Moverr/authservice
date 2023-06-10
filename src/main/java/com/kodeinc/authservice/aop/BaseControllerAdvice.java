@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 
 @Slf4j
 @ControllerAdvice
@@ -71,12 +75,10 @@ public class BaseControllerAdvice {
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .code(status.hashCode())
                 .message(e.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
                 .build();
 
-        return new ResponseEntity<>(error
-                ,
-                status
-        );
+        return new ResponseEntity<>(error ,  status );
     }
 
 
