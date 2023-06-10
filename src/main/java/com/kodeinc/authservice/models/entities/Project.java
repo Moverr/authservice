@@ -1,6 +1,7 @@
 package com.kodeinc.authservice.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "projects")
 @Getter
 @Setter
+
 public class Project extends BaseEntity{
 
 
