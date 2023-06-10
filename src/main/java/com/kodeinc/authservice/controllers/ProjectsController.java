@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("v1/projects")
 @Validated
@@ -39,8 +41,8 @@ public class ProjectsController {
     }
 
     @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> getById(@PathVariable(value = "id") long id){
-        return null;
+    public ResponseEntity<Optional<ProjectResponseDTO>> getById(@PathVariable(value = "id") long id){
+        return  ResponseEntity.ok(service.getByID(id));
     }
 
 

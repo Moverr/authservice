@@ -53,6 +53,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public Optional<ProjectResponseDTO> getByID(long id){
+        Optional<Project> optionalProject =  repository.findById(id);
+        if(optionalProject.isEmpty()){
+            throw new CustomNotFoundException("Record does not exist");
+        }
+        return Optional.of(populate(optionalProject.get()));
+    }
+
+    @Override
     public CustomPage<ProjectResponseDTO> list(SearchRequestDTO query) {
         Sort sort =   switch (query.getSortBy()){
             case "code" -> Sort.by("code") ;
