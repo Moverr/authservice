@@ -3,19 +3,23 @@ package com.kodeinc.authservice.controllers;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("v1/projects")
+@Validated
 public class ProjectsController {
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> create(@RequestBody ProjectRequestDTO request){
-        ProjectResponseDTO responseDTO = new ProjectResponseDTO();
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectResponseDTO> create(@RequestBody @Valid ProjectRequestDTO request){
+        ProjectResponseDTO responseDTO =   ProjectResponseDTO.builder().id(12l).build();
+
         return  ResponseEntity.ok(responseDTO);
     }
 
