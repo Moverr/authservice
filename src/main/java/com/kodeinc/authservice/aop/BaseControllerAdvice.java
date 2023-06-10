@@ -60,6 +60,17 @@ public class BaseControllerAdvice {
     }
 
 
+    @ExceptionHandler(Exception.class) // exception handled
+    public ResponseEntity<ErrorResponseDTO> handleGenericError(
+            Exception e
+    ) {
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return getErrorResponseDTOResponseEntity(e, status);
+    }
+
+
+
 
     private ResponseEntity<ErrorResponseDTO> getErrorResponseDTOResponseEntity(Exception e, HttpStatus status) {
         StringWriter stringWriter = new StringWriter();
@@ -78,6 +89,7 @@ public class BaseControllerAdvice {
 
         return new ResponseEntity<>(error ,  status );
     }
+
 
 
 
