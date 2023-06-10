@@ -80,7 +80,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void archive(long id) {
+    public void delete(long id) {
         Optional<Project> optionalProject =  repository.findById(id);
         if(optionalProject.isEmpty()){
             throw new CustomNotFoundException("Record does not exist");

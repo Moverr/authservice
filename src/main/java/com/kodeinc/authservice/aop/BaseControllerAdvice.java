@@ -25,7 +25,7 @@ public class BaseControllerAdvice {
             Exception e
     ) {
 
-        HttpStatus status = HttpStatus.NOT_FOUND;
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         return getErrorResponseDTOResponseEntity(e, status);
     }
 
@@ -36,7 +36,8 @@ public class BaseControllerAdvice {
             Exception e
     ) {
 
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
         return getErrorResponseDTOResponseEntity(e, status);
     }
 
@@ -82,9 +83,10 @@ public class BaseControllerAdvice {
         log.debug(stackTrace);
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .code(status.hashCode())
+                .code(status.value())
                 .message(e.getMessage())
                 .timestamp(Timestamp.from(Instant.now()))
+                .status(String.valueOf(status.value()))
                 .build();
 
         return new ResponseEntity<>(error ,  status );

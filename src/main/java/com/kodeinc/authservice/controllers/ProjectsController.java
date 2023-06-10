@@ -46,12 +46,13 @@ public class ProjectsController {
 
     @PutMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectResponseDTO> update(@PathVariable(value = "id") long id,@RequestBody ProjectRequestDTO request){
-        return null;
+        return  ResponseEntity.ok(service.update(id,request));
     }
 
     @DeleteMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity delete(@PathVariable(value = "id") long id){
-        return ResponseEntity.ok().build();
+        service.delete(id);
+        return ResponseEntity.accepted().build();
     }
 
 }
