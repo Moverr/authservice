@@ -119,17 +119,7 @@ class ProjectServiceImplTest {
         String actualMessage = exception.getMessage();
         assertEquals(actualMessage,expectedMessage);
     }
-    @Test
-    void getByID() {
-    }
 
-    @Test
-    void list() {
-    }
-
-    @Test
-    void delete() {
-    }
 
     private String getProperty(){
         return  "{\n" +
