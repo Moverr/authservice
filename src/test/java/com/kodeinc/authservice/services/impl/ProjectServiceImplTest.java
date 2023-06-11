@@ -3,6 +3,7 @@ package com.kodeinc.authservice.services.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodeinc.authservice.models.dtos.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.models.dtos.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
@@ -85,11 +86,39 @@ class ProjectServiceImplTest {
 
     }
 
-
     @Test
-    void update() {
-    }
+    void givenInputOnUpdateThrowPropertyDoesNotExistsException() throws JsonProcessingException {
 
+        ProjectRequestDTO request =   mapper.readValue(getProperty(), ProjectRequestDTO.class);
+
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        CustomNotFoundException exception = assertThrows(CustomNotFoundException.class,()->{
+            projectService.update(1l,request);
+        });
+        String expectedMessage = "Record does not exist";
+        String actualMessage = exception.getMessage();
+        assertEquals(actualMessage,expectedMessage);
+    }
+    @Test
+    void givenInputOnUpdateThrowPropertyUniqueConstraintException() throws JsonProcessingException {
+
+        ProjectRequestDTO request =   mapper.readValue(getProperty(), ProjectRequestDTO.class);
+
+        Project p = new Project();
+        p.setId(1L);
+        List<Project> propertyList = new ArrayList<>();
+        propertyList.add(p);
+
+        when(repository.findById(any())).thenReturn(Optional.of(p));
+        when(repository.findByNameAndCodeAndNotID(any(),any(),any())).thenReturn(propertyList);
+
+        CustomBadRequestException exception = assertThrows(CustomBadRequestException.class,()->{
+            projectService.update(1l,request);
+        });
+        String expectedMessage = "Project Already Exists";
+        String actualMessage = exception.getMessage();
+        assertEquals(actualMessage,expectedMessage);
+    }
     @Test
     void getByID() {
     }
