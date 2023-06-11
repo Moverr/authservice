@@ -46,6 +46,14 @@ public class ProjectServiceImpl implements ProjectService {
        if(optionalProject.isEmpty()){
            throw new CustomNotFoundException("Record does not exist");
        }
+
+
+        List<Project> projectList =  repository.findByNameAndCodeAndNotID(id,request.getName(), request.getCode());
+        if(!projectList.isEmpty()){
+            throw new CustomBadRequestException("Project Already Exists");
+        }
+
+
        Project project = optionalProject.get();
        Project newRecordUpdate  = populate(request);
        newRecordUpdate.setId(project.getId());
