@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.0'
@@ -14,8 +16,13 @@ configurations {
 		extendsFrom annotationProcessor
 	}
 }
+springBoot {
+	buildInfo()
+}
+
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -47,14 +54,14 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.junit.platform:junit-platform-launcher"
 	testImplementation "org.springframework.boot:spring-boot-starter-test"
-	testImplementation "org.mockito:mockito-inline"
+	 testImplementation 'org.mockito:mockito-inline:5.2.0'
+
 
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
 }
-
 
 flyway{
 	url = 'jdbc:postgresql://localhost:5432/dev'
