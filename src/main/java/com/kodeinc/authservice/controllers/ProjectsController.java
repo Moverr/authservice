@@ -4,7 +4,7 @@ import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
-import com.kodeinc.authservice.services.impl.ProjectServiceImpl;
+import com.kodeinc.authservice.services.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,7 +21,7 @@ public class ProjectsController {
 
 
     @Autowired
-    ProjectServiceImpl service;
+    ProjectService service;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectResponseDTO> create(@RequestBody @Valid ProjectRequestDTO request){

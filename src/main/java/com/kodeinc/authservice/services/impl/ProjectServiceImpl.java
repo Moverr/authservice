@@ -11,7 +11,10 @@ import com.kodeinc.authservice.repositories.ProjectRepository;
 import com.kodeinc.authservice.services.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ProjectServiceImpl implements ProjectService {
+class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectRepository repository;
