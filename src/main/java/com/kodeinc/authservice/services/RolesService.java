@@ -1,15 +1,15 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.RoleRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
-import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import com.kodeinc.authservice.models.entities.Role;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public interface RolesService  extends BasicService<RoleRequestDTO,RoleResponseDTO, Role> {
 
     @Override

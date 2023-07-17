@@ -5,10 +5,12 @@ import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import com.kodeinc.authservice.services.RolesService;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-public class RoleServiceImpl implements RolesService {
+@Service
+ class RoleServiceImpl implements RolesService {
     @Override
     public RoleResponseDTO create(RoleRequestDTO request) {
         return null;
