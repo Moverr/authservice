@@ -8,7 +8,7 @@ import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.repositories.ProjectRepository;
-import com.kodeinc.authservice.services.ProjectService;
+import com.kodeinc.authservice.services.BasicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-class ProjectServiceImpl implements ProjectService {
+class ProjectServiceImpl implements BasicService<ProjectRequestDTO, ProjectResponseDTO, Project>{
 
     @Autowired
     private ProjectRepository repository;

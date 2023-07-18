@@ -4,10 +4,12 @@ import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
- interface BasicService <T,R,X>{
+@Component
+ public  interface BasicService <T,R,X>{
 
 
     R create(T request);
