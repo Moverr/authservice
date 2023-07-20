@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -28,12 +27,7 @@ public class SecurityConfig   {
 //                 //todo:
 //             }
 //         });
-         http.httpBasic(new Customizer<HttpBasicConfigurer<HttpSecurity>>() {
-             @Override
-             public void customize(HttpBasicConfigurer<HttpSecurity> httpSecurityHttpBasicConfigurer) {
-                 httpSecurityHttpBasicConfigurer.realmName("mover");
-             }
-         });
+         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.realmName("mover"));
 
 
          return http.build();
