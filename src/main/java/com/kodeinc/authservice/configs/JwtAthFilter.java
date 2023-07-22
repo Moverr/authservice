@@ -40,11 +40,11 @@ public class JwtAthFilter extends OncePerRequestFilter {
             return;
         }
         jwtToken = authHeader.substring(BEGIN_INDEX);
-        userEmail = jwtUtils.extractUsername(jwtToken); //todo: implemented
+        userEmail = jwtUtils.extractUsername(jwtToken);
       if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
           UserDetails userDetails= userDetailsService.loadUserByUsername(userEmail);
-          final boolean isTokenValid = jwtUtils.validateToken(jwtToken,userDetails); //todo: to be implemented
+          final boolean isTokenValid = jwtUtils.validateToken(jwtToken,userDetails);
          if(isTokenValid){
              UsernamePasswordAuthenticationToken authToken =
                      new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
@@ -53,7 +53,6 @@ public class JwtAthFilter extends OncePerRequestFilter {
          }
       }
       filterChain.doFilter(request,response);
-
 
     }
 }
