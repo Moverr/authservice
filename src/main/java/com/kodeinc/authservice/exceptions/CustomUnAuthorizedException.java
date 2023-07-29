@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.models.dtos.exceptions;
+package com.kodeinc.authservice.exceptions;
 
 public class CustomUnAuthorizedException extends RuntimeException{
     public CustomUnAuthorizedException(){

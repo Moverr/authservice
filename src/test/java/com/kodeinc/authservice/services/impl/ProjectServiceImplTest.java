@@ -2,8 +2,8 @@ package com.kodeinc.authservice.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kodeinc.authservice.models.dtos.exceptions.CustomBadRequestException;
-import com.kodeinc.authservice.models.dtos.exceptions.CustomNotFoundException;
+import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
@@ -15,13 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.model.Property;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

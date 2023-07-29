@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.models.dtos.exceptions.CustomBadRequestException;
-import com.kodeinc.authservice.models.dtos.exceptions.CustomNotFoundException;
+import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;

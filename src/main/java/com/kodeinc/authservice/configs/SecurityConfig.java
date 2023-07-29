@@ -1,6 +1,7 @@
 package com.kodeinc.authservice.configs;
 
 
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +10,17 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +29,19 @@ public class SecurityConfig   {
 
     private final JwtAthFilter jwtAthFilter;
 
+    private final  static List<UserDetails> MANUAL_USERS = Arrays.asList(
+             new User(
+                     "moverr@gmail.com",
+                     "password",
+                     Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"))
+             ),
+              new User(
+                     "user.mail@gmail.com",
+                             "password",
+                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USEr"))
+            )
+
+    );
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          http
@@ -26,7 +49,7 @@ public class SecurityConfig   {
                  .anyRequest()
                  .authenticated()
                          .and()
-                 .addFilterBefore(jwtAthFilter, UsernamePasswordAuthenticationFilter.class)
+                 .addFilterBefore(jwtAthFilter, UsernamePasswordAuthenticationFilter.class);
 
 
 
@@ -37,9 +60,18 @@ public class SecurityConfig   {
 //             }
 //         });
 
-         .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.realmName("mover"));
-
+      //   .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.realmName("mover"));
 
          return http.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(){
+        return  new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return  MANUAL_USERS.stream().filter(x->x.getUsername() == username).findFirst().orElse(throw new CustomNotFoundException("Bo user found Exception"));
+            }
+        };
     }
 }

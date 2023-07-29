@@ -1,9 +1,9 @@
 package com.kodeinc.authservice.aop;
 
-import com.kodeinc.authservice.models.dtos.exceptions.CustomBadRequestException;
-import com.kodeinc.authservice.models.dtos.exceptions.CustomForbiddenRequestException;
-import com.kodeinc.authservice.models.dtos.exceptions.CustomNotFoundException;
-import com.kodeinc.authservice.models.dtos.exceptions.CustomUnAuthorizedException;
+import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.CustomForbiddenRequestException;
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
+import com.kodeinc.authservice.exceptions.CustomUnAuthorizedException;
 import com.kodeinc.authservice.models.dtos.responses.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
