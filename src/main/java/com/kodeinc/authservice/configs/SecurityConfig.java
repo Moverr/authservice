@@ -6,10 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -24,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
@@ -96,7 +95,7 @@ public class SecurityConfig   {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 return  MANUAL_USERS.stream()
-                        .filter(x->x.getUsername() == username)
+                        .filter(x-> Objects.equals(x.getUsername(), username))
                         .findFirst()
                         .orElseThrow( () ->  new UsernameNotFoundException("Bo user found Exception"));
             }
