@@ -1,20 +1,24 @@
 package com.kodeinc.authservice.configs;
 
 
-import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -48,9 +52,16 @@ public class SecurityConfig   {
                  .authorizeRequests()
                  .anyRequest()
                  .authenticated()
-                         .and()
+
+                 .and()
+                 .authenticationProvider(authenticationProvider())
                  .addFilterBefore(jwtAthFilter, UsernamePasswordAuthenticationFilter.class);
 
+
+                //session management
+                http.sessionManagement(
+                        sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
 
 //         http.formLogin(new Customizer<FormLoginConfigurer<HttpSecurity>>() {
@@ -65,12 +76,31 @@ public class SecurityConfig   {
          return http.build();
     }
 
+
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+        //return  new BCryptPasswordEncoder(); //todo password encode.
+    }
+
     @Bean
     public UserDetailsService userDetailsService(){
         return  new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return  MANUAL_USERS.stream().filter(x->x.getUsername() == username).findFirst().orElse(throw new CustomNotFoundException("Bo user found Exception"));
+                return  MANUAL_USERS.stream()
+                        .filter(x->x.getUsername() == username)
+                        .findFirst()
+                        .orElseThrow( () ->  new UsernameNotFoundException("Bo user found Exception"));
             }
         };
     }
