@@ -1,6 +1,6 @@
 package com.kodeinc.authservice.models.dtos.requests;
 
-public class PermissionRequestDTO {
+public class PermissionRequest {
 
     private String create;
     private String read;

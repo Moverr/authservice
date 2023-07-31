@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class SearchRequestDTO {
+public class SearchRequest {
 
     private String query;
     private int offset;

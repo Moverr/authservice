@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProjectRequestDTO {
+public class ProjectRequest {
     @JsonProperty("name")
     @NotEmpty(message = "name is mandatory")
     private String name;

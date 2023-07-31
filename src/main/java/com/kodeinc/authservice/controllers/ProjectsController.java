@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.controllers;
 
-import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
+import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
+import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("v1/projects")
+@RequestMapping("/api/v1/projects")
 @Validated
 public class ProjectsController {
 
 
     @Autowired
-    BasicService<ProjectRequestDTO, ProjectResponseDTO, Project> service;
+    BasicService<ProjectRequest, ProjectResponseDTO, Project> service;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> create(@RequestBody @Valid ProjectRequestDTO request){
+    public ResponseEntity<ProjectResponseDTO> create(@RequestBody @Valid ProjectRequest request){
         return  ResponseEntity.ok(service.create(request));
     }
 
@@ -38,7 +38,7 @@ public class ProjectsController {
            @RequestParam(value="sort_type",defaultValue = "updated_at") String sortType
 
            ){
-        return ResponseEntity.ok( service.list(new SearchRequestDTO(query,offset,limit,sortBy,sortType)));
+        return ResponseEntity.ok( service.list(new SearchRequest(query,offset,limit,sortBy,sortType)));
     }
 
     @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,7 +48,7 @@ public class ProjectsController {
 
 
     @PutMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> update(@PathVariable(value = "id") long id,@RequestBody ProjectRequestDTO request){
+    public ResponseEntity<ProjectResponseDTO> update(@PathVariable(value = "id") long id,@RequestBody ProjectRequest request){
         return  ResponseEntity.ok(service.update(id,request));
     }
 

@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.models.dtos.requests.RoleRequestDTO;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
+import com.kodeinc.authservice.models.dtos.requests.RoleRequest;
+import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import com.kodeinc.authservice.models.entities.Role;
@@ -11,19 +11,19 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
- class RoleServiceImpl implements BasicService<RoleRequestDTO,RoleResponseDTO, Role> {
+ class RoleServiceImpl implements BasicService<RoleRequest,RoleResponseDTO, Role> {
     @Override
-    public RoleResponseDTO create(RoleRequestDTO request) {
+    public RoleResponseDTO create(RoleRequest request) {
         return null;
     }
 
     @Override
-    public RoleResponseDTO update(long id, RoleRequestDTO request) {
+    public RoleResponseDTO update(long id, RoleRequest request) {
         return null;
     }
 
     @Override
-    public CustomPage<RoleResponseDTO> list(SearchRequestDTO query) {
+    public CustomPage<RoleResponseDTO> list(SearchRequest query) {
         return null;
     }
 

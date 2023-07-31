@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
-import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
+import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.repositories.ProjectRepository;
@@ -47,7 +47,7 @@ class ProjectServiceImplTest {
     @Test
     void givenInputThrowPropertyExistsException() throws JsonProcessingException {
 
-        ProjectRequestDTO request =   mapper.readValue(getProperty(), ProjectRequestDTO.class);
+        ProjectRequest request =   mapper.readValue(getProperty(), ProjectRequest.class);
 
         Project p = new Project();
         p.setId(1L);
@@ -66,7 +66,7 @@ class ProjectServiceImplTest {
     @Test
     void givenInputSaveRecord() throws JsonProcessingException {
 
-        ProjectRequestDTO request =   mapper.readValue(getProperty(), ProjectRequestDTO.class);
+        ProjectRequest request =   mapper.readValue(getProperty(), ProjectRequest.class);
 
         Project p = new Project();
         p.setId(1L);
@@ -86,7 +86,7 @@ class ProjectServiceImplTest {
     @Test
     void givenInputOnUpdateThrowPropertyDoesNotExistsException() throws JsonProcessingException {
 
-        ProjectRequestDTO request =   mapper.readValue(getProperty(), ProjectRequestDTO.class);
+        ProjectRequest request =   mapper.readValue(getProperty(), ProjectRequest.class);
 
         when(repository.findById(any())).thenReturn(Optional.empty());
         CustomNotFoundException exception = assertThrows(CustomNotFoundException.class,()->{
@@ -99,7 +99,7 @@ class ProjectServiceImplTest {
     @Test
     void givenInputOnUpdateThrowPropertyUniqueConstraintException() throws JsonProcessingException {
 
-        ProjectRequestDTO request =   mapper.readValue(getProperty(), ProjectRequestDTO.class);
+        ProjectRequest request =   mapper.readValue(getProperty(), ProjectRequest.class);
 
         Project p = new Project();
         p.setId(1L);

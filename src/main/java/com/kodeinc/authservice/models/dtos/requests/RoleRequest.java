@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RoleRequestDTO {
+public class RoleRequest {
 
     @JsonProperty("project")
     private MiniProjectRequestDTO project;

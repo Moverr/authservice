@@ -1,9 +1,7 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
+import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
-import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -14,7 +12,7 @@ import java.util.Optional;
 
     R create(T request);
     R update(long id,T request);
-    CustomPage<R> list(SearchRequestDTO query);
+    CustomPage<R> list(SearchRequest query);
     Optional<R> getByID(long id);
     void delete(long id);
 

@@ -2,8 +2,8 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
-import com.kodeinc.authservice.models.dtos.requests.ProjectRequestDTO;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequestDTO;
+import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
+import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-class ProjectServiceImpl implements BasicService<ProjectRequestDTO, ProjectResponseDTO, Project>{
+class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectResponseDTO, Project>{
 
     @Autowired
     private ProjectRepository repository;
 
     @Transactional
     @Override
-    public ProjectResponseDTO create(ProjectRequestDTO request) throws CustomBadRequestException {
+    public ProjectResponseDTO create(ProjectRequest request) throws CustomBadRequestException {
         log.info("Entered the create method");
        List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
        if(!projectList.isEmpty()){
@@ -44,7 +44,7 @@ class ProjectServiceImpl implements BasicService<ProjectRequestDTO, ProjectRespo
 
     @Transactional
     @Override
-    public ProjectResponseDTO update(long id, ProjectRequestDTO request) {
+    public ProjectResponseDTO update(long id, ProjectRequest request) {
        Optional<Project> optionalProject =  repository.findById(id);
        if(optionalProject.isEmpty()){
            throw new CustomNotFoundException("Record does not exist");
@@ -73,7 +73,7 @@ class ProjectServiceImpl implements BasicService<ProjectRequestDTO, ProjectRespo
     }
 
     @Override
-    public CustomPage<ProjectResponseDTO> list(SearchRequestDTO query) {
+    public CustomPage<ProjectResponseDTO> list(SearchRequest query) {
         Sort sort =   switch (query.getSortBy()){
             case "code" -> Sort.by("code") ;
            default -> Sort.by("name");
@@ -110,7 +110,7 @@ class ProjectServiceImpl implements BasicService<ProjectRequestDTO, ProjectRespo
        repository.delete(project);
     }
 
-    private Project populate(ProjectRequestDTO request) {
+    private Project populate(ProjectRequest request) {
         Project entity  = new Project();
         entity.setCode(request.getCode());
         entity.setName(request.getName());
