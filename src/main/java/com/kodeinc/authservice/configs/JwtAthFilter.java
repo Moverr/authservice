@@ -1,14 +1,15 @@
 package com.kodeinc.authservice.configs;
 
+import com.kodeinc.authservice.dao.UserDAO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,12 +17,13 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@Configuration
 public class JwtAthFilter extends OncePerRequestFilter {
     public static final int BEGIN_INDEX = 7;
 
 
     @Autowired
-    UserDetailsService userDetailsService;
+    UserDAO userDAO;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -43,7 +45,7 @@ public class JwtAthFilter extends OncePerRequestFilter {
         userEmail = jwtUtils.extractUsername(jwtToken);
       if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
-          UserDetails userDetails= userDetailsService.loadUserByUsername(userEmail);
+          UserDetails userDetails= userDAO.findUserByEmail(userEmail);
 
           //validate Username and password
 

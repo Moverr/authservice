@@ -1,18 +1,17 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.configs.JwtUtils;
+import com.kodeinc.authservice.dao.UserDAO;
 import com.kodeinc.authservice.models.dtos.requests.AuthenticationRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.PublicKey;
 
 /**
  * @author Muyinda Rogers
@@ -26,21 +25,27 @@ public class AuthenticationController {
 
 
     private final AuthenticationManager authenticationManager;
-    private final  UserDetailsService userDetailsService;
+    private final UserDAO userDAO;
     private final JwtUtils jwtUtils;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticate(
+    @GetMapping
+    public  ResponseEntity<String> testme(){
+       return ResponseEntity.ok("TEsted");
+    }
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> authme(
             @RequestBody AuthenticationRequest request
     ) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
+        final UserDetails user = userDAO.findUserByEmail(request.getUsername());
         if(user != null){
            return    ResponseEntity.ok(jwtUtils.generateToken(user));
         }
 
         return ResponseEntity.badRequest().body("Invalid username or password");
+
     }
 }
