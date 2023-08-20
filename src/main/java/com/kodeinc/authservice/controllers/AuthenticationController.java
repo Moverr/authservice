@@ -29,12 +29,12 @@ public class AuthenticationController {
     private final JwtUtils jwtUtils;
 
     @GetMapping
-    public  ResponseEntity<String> testme(){
+    public  ResponseEntity<String> authenticate(){
        return ResponseEntity.ok("TEsted");
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> authme(
+    public ResponseEntity<String> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
         authenticationManager.authenticate(
