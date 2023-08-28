@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,7 +24,7 @@ public class JwtAthFilter extends OncePerRequestFilter {
 
 
     @Autowired
-    UserDAO userDAO;
+    UserDetailsService userDetailsService;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -45,7 +46,7 @@ public class JwtAthFilter extends OncePerRequestFilter {
         userEmail = jwtUtils.extractUsername(jwtToken);
       if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
-          UserDetails userDetails= userDAO.findUserByEmail(userEmail);
+          UserDetails userDetails= userDetailsService.loadUserByUsername(userEmail);
 
           //validate Username and password
 

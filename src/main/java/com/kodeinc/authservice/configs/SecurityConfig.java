@@ -1,7 +1,6 @@
 package com.kodeinc.authservice.configs;
 
 
-import com.kodeinc.authservice.dao.UserDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +11,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig   {
 
     private final JwtAthFilter jwtAthFilter;
-    private final UserDAO userDAO;
+    private final UserDetailsService userDetailsService;
 
 
     @Bean
@@ -46,7 +44,7 @@ public class SecurityConfig   {
                  .sessionManagement(
                          sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                  )
-                 .authenticationProvider(authenticationProvider())
+                 .authenticationProvider(authProvider())
                  .addFilterBefore(jwtAthFilter, UsernamePasswordAuthenticationFilter.class);
 
          return http.build();
@@ -55,10 +53,11 @@ public class SecurityConfig   {
 
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authProvider() {
         final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
+      //  provider.setPostAuthenticationChecks(differentLocationChecker());
         return provider;
     }
     @Bean
@@ -68,17 +67,16 @@ public class SecurityConfig   {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-        //return  new BCryptPasswordEncoder(); //todo password encode.
+        return new BCryptPasswordEncoder(11);
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-    return  new UserDetailsService() {
-        @Override
-        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-            return userDAO.findUserByEmail(username);
-        }
-    };
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(){
+//    return  new UserDetailsService() {
+//        @Override
+//        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//            return userDAO.findUserByEmail(username);
+//        }
+//    };
+//    }
 }

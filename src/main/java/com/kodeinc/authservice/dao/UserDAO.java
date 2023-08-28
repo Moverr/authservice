@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,8 +19,8 @@ import java.util.Objects;
  * @Email moverr@gmail.com
  */
 
-@Repository
-public class UserDAO {
+@Service
+public class UserDAO implements UserDetailsService{
     private final  static List<UserDetails> MANUAL_USERS = Arrays.asList(
             new User(
                     "moverr@gmail.com",
@@ -36,11 +37,17 @@ public class UserDAO {
 
 
     public  UserDetails findUserByEmail(String username){
-        return  MANUAL_USERS.stream()
-                        .filter(x-> Objects.equals(x.getUsername(), username))
-                        .findFirst()
-                        .orElseThrow( () ->  new UsernameNotFoundException("Bo user found Exception"));
+        return  this.loadUserByUsername(username);
 
+
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return  MANUAL_USERS.stream()
+                .filter(x-> Objects.equals(x.getUsername(), username))
+                .findFirst()
+                .orElseThrow( () ->  new UsernameNotFoundException("Bo user found Exception"));
 
     }
 }
