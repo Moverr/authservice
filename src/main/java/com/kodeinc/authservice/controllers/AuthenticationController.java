@@ -4,11 +4,14 @@ import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dao.UserDAO;
 import com.kodeinc.authservice.models.dtos.requests.AuthenticationRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.PublicKey;
@@ -24,8 +27,11 @@ import java.security.PublicKey;
 public class AuthenticationController {
 
 
+    @Autowired
     private final AuthenticationManager authenticationManager;
-    private final UserDAO userDAO;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
     private final JwtUtils jwtUtils;
 
     @GetMapping
@@ -37,10 +43,14 @@ public class AuthenticationController {
     public ResponseEntity<String> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-        final UserDetails user = userDAO.findUserByEmail(request.getUsername());
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
+
+
+//        authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(request.getUsername(), hashedPassword)
+//        );
+        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
         if(user != null){
            return    ResponseEntity.ok(jwtUtils.generateToken(user));
         }

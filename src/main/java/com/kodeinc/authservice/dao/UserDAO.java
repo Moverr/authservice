@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +22,21 @@ import java.util.Objects;
 
 @Service
 public class UserDAO implements UserDetailsService{
+
+    static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    static String hashedPassword = passwordEncoder.encode("password");
+
+
+
     private final  static List<UserDetails> MANUAL_USERS = Arrays.asList(
             new User(
                     "moverr@gmail.com",
-                    "password",
+                    hashedPassword,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"))
             ),
             new User(
                     "user.mail@gmail.com",
-                    "password",
+                    hashedPassword,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USEr"))
             )
 
