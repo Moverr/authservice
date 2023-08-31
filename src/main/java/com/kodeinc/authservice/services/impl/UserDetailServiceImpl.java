@@ -41,7 +41,7 @@ public class UserDetailServiceImpl implements UserDetailsService{
 
     );
 
-
+    // Development..
     public  UserDetails findUserByEmail(String username){
         return  this.loadUserByUsername(username);
 
