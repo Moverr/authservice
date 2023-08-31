@@ -47,9 +47,9 @@ public class AuthenticationController {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
 
-//        authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(request.getUsername(), hashedPassword)
-//        );
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), hashedPassword)
+        );
         final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
         if(user != null){
            return    ResponseEntity.ok(jwtUtils.generateToken(user));
