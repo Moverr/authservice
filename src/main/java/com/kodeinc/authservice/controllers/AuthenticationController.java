@@ -1,20 +1,18 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.configs.JwtUtils;
-import com.kodeinc.authservice.dao.UserDAO;
-import com.kodeinc.authservice.models.dtos.requests.AuthenticationRequest;
+import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.PublicKey;
 
 /**
  * @author Muyinda Rogers
@@ -41,21 +39,21 @@ public class AuthenticationController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> authenticate(
-            @RequestBody AuthenticationRequest request
+            @RequestBody LoginRequest loginRequest
     ) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
 
+            final UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+            if (user != null) {
+                return ResponseEntity.ok(jwtUtils.generateToken(user));
+            }
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), hashedPassword)
-        );
-        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
-        if(user != null){
-           return    ResponseEntity.ok(jwtUtils.generateToken(user));
+            return ResponseEntity.badRequest().body("Invalid username or password");
         }
-
-        return ResponseEntity.badRequest().body("Invalid username or password");
+        else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
     }
 }
