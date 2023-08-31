@@ -1,6 +1,5 @@
 package com.kodeinc.authservice.configs;
 
-import com.kodeinc.authservice.dao.UserDAO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

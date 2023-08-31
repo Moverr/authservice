@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.dao;
+package com.kodeinc.authservice.services.impl;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,7 +20,7 @@ import java.util.Objects;
  */
 
 @Service
-public class UserDAO implements UserDetailsService{
+public class UserDetailServiceImpl implements UserDetailsService{
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");
