@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
         validateAuthentication(request);
         final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
         if (user == null) {
-            throw new UnAuthroizedException(ErrorResponse.builder().code("invalid").msg("Invalid username or passord").build());
+            throw new UnAuthroizedException(ErrorResponse.builder().code("invalid").msg("Invalid username or password").build());
         }
 
         return populate(user);
