@@ -3,6 +3,7 @@ package com.kodeinc.authservice.controllers;
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,9 +30,7 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private final JwtUtils jwtUtils;
+    private AuthService authService;
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
@@ -42,6 +41,13 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
     ) {
+        AuthResponse response = authService.authenticate(loginRequest);
+
+        return ResponseEntity.ok(response);
+
+
+
+     /*
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         if (authentication.isAuthenticated()) {
 
@@ -55,6 +61,7 @@ public class AuthenticationController extends BaseController<AuthResponse>{
         else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        */
 
     }
 }

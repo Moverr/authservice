@@ -1,10 +1,13 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -20,23 +23,52 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private   JwtUtils jwtUtils;
+    @Autowired
+    private    AuthenticationManager authenticationManager;
+
+
+
+
     @Override
     public AuthResponse authenticate(LoginRequest request) {
 
-        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
-        if (user != null) {
-            return  populate(user);
+        Authentication authentication = validateAuthentication(request);
+
+        if (authentication.isAuthenticated()) {
+            final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
+            if (user != null) {
+                return  populate(user);
+            }
+
         }
+        else {
+            //todo: throw custom exception
+        }
+
 
         return null;
     }
 
+    private Authentication validateAuthentication(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        return authentication;
+    }
+
     private AuthResponse populate(UserDetails user){
+
+        String token = jwtUtils.generateToken(user);
 
         //todo: generate token.
         // todo : add user details
 
-        return  null;
+        AuthResponse response =      AuthResponse.builder()
+                .authToken(token)
+                .build();
+
+        return  response;
     }
 
 }
