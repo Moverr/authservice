@@ -1,7 +1,9 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.configs.JwtUtils;
+import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,15 +24,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class AuthenticationController extends BaseController<AuthResponse>{
 
 
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private final JwtUtils jwtUtils;
+    private AuthService authService;
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
@@ -38,22 +38,10 @@ public class AuthenticationController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> authenticate(
+    public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
     ) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-
-            final UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            if (user != null) {
-                return ResponseEntity.ok(jwtUtils.generateToken(user));
-            }
-
-            return ResponseEntity.badRequest().body("Invalid username or password");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+        AuthResponse response = authService.authenticate(loginRequest);
+        return ResponseEntity.ok(response);
     }
 }
