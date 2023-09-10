@@ -1,6 +1,7 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.configs.JwtUtils;
+import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticationController extends BaseController<String>{
+public class AuthenticationController extends BaseController<AuthResponse>{
 
 
     @Autowired
@@ -38,7 +39,7 @@ public class AuthenticationController extends BaseController<String>{
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> authenticate(
+    public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
     ) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
