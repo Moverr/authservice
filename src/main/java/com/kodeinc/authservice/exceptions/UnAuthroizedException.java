@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.exceptions;
 
+import com.kodeinc.authservice.dtos.responses.ErrorResponse;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -8,11 +9,10 @@ import org.springframework.http.HttpStatus;
  * @Email moverr@gmail.com
  */
 public class UnAuthroizedException extends RuntimeException{
-    private final HttpStatus statusCode;
+    private  ErrorResponse body;
 
-    public UnAuthroizedException(String body, HttpStatus statusCode) {
-        super(body);
-        this.statusCode = statusCode;
+    public UnAuthroizedException(ErrorResponse body) {
+        super(body.toString());
     }
 
 
