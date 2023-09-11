@@ -2,7 +2,8 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.exceptions.UnAuthroizedException;
+import com.kodeinc.authservice.exceptions.CustomUnAuthorizedException;
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
         validateAuthentication(request);
         final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
         if (user == null) {
-            throw new UnAuthroizedException("Invalid username or password");
+            throw new KhoodiUnAuthroizedException("Invalid username or password");
         }
 
         return populate(user);
@@ -44,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
     private Authentication validateAuthentication(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (authentication.isAuthenticated())
-            throw new UnAuthroizedException("Un Authorized Access");
+            throw new KhoodiUnAuthroizedException("Un Authorized Access");
 
         return authentication;
     }
