@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
  * @Email moverr@gmail.com
  */
 public class UnAuthroizedException extends RuntimeException{
-    private  ErrorResponse body;
+    private  String body;
 
-    public UnAuthroizedException(ErrorResponse body) {
-        super(body.toString());
+    public UnAuthroizedException(String body) {
+        super(body);
     }
 
 

@@ -2,7 +2,6 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.dtos.responses.ErrorResponse;
 import com.kodeinc.authservice.exceptions.UnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
@@ -36,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
         validateAuthentication(request);
         final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
         if (user == null) {
-            throw new UnAuthroizedException(ErrorResponse.builder().code("invalid").msg("Invalid username or password").build());
+            throw new UnAuthroizedException("Invalid username or password");
         }
 
         return populate(user);
@@ -45,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private Authentication validateAuthentication(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (authentication.isAuthenticated())
-            throw new UnAuthroizedException(ErrorResponse.builder().code("invalid").msg("Un Authorized Access").build());
+            throw new UnAuthroizedException("Un Authorized Access");
 
         return authentication;
     }
