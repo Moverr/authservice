@@ -3,6 +3,7 @@ package com.kodeinc.authservice.controllers;
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,15 +24,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticationController extends BaseController<AuthResponse>{
+public class AuthenticationController extends BaseController<String>{
 
-
-    @Autowired
-    private final AuthenticationManager authenticationManager;
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private final JwtUtils jwtUtils;
+@Autowired
+    private  AuthService service;
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
@@ -39,9 +35,12 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AuthResponse> authenticate(
+    public ResponseEntity<String> authenticate(
             @RequestBody LoginRequest loginRequest
     ) {
+        return  ResponseEntity.ok(service.authenticate(loginRequest).toString());
+
+        /*
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         if (authentication.isAuthenticated()) {
 
@@ -50,11 +49,13 @@ public class AuthenticationController extends BaseController<AuthResponse>{
                 return ResponseEntity.ok(jwtUtils.generateToken(user));
             }
 
-            return ResponseEntity.badRequest().body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            //.body("Invalid username or password");
         }
         else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        */
 
     }
 }
