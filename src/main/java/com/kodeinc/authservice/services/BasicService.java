@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
- public  interface BasicService <T,R,X>{
+public
+interface BasicService <T,R,X>{
 
 
     R create(T request);

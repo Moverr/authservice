@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectResponseDTO, Project>{
+public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectResponseDTO, Project>{
 
     @Autowired
     private ProjectRepository repository;
@@ -32,7 +32,7 @@ class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectResponse
     @Transactional
     @Override
     public ProjectResponseDTO create(ProjectRequest request) throws CustomBadRequestException {
-        log.info("Entered the create method");
+        log.info("ProjectServiceImpl   create method");
        List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
        if(!projectList.isEmpty()){
            throw new CustomBadRequestException("Project Already Exists");

@@ -35,23 +35,5 @@ public class AuthenticationController extends BaseController<AuthResponse>{
             @RequestBody LoginRequest loginRequest
     ) {
         return  ResponseEntity.ok(service.authenticate(loginRequest));
-
-        /*
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-
-            final UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            if (user != null) {
-                return ResponseEntity.ok(jwtUtils.generateToken(user));
-            }
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            //.body("Invalid username or password");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        */
-
     }
 }

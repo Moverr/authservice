@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
- class RoleServiceImpl implements BasicService<RoleRequest,RoleResponseDTO, Role> {
+ public class RoleServiceImpl implements BasicService<RoleRequest,RoleResponseDTO, Role> {
     @Override
     public RoleResponseDTO create(RoleRequest request) {
         return null;
