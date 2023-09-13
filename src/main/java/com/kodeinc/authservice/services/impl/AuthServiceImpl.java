@@ -2,19 +2,13 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.CustomAuthenticationManager;
 import com.kodeinc.authservice.configs.JwtUtils;
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.exceptions.CustomUnAuthorizedException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,7 +21,6 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-
     private CustomAuthenticationManager authenticationManager;
 
     @Autowired
