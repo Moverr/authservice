@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.dtos.responses;
+package com.kodeinc.authservice.models.dtos.responses;
 
 /**
  * @author Muyinda Rogers

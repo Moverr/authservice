@@ -1,8 +1,9 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * @author Muyinda Rogers
@@ -12,11 +13,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Setter
+@Builder
+@JsonSerialize
 public class AuthResponse {
     private String username;
-
-    private AuthToken authToken;
-    private  RefreshToken refreshToken;
+    private AuthTokenResponse authToken;
+    private RefreshTokenResponse refreshToken;
     private boolean accountLocked;
     private boolean credentialsNonExpired;
     private boolean enabled;

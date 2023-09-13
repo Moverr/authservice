@@ -1,20 +1,11 @@
 package com.kodeinc.authservice.controllers;
 
-import com.kodeinc.authservice.configs.JwtUtils;
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.services.AuthService;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.services.impl.AuthServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -25,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/auth")
 
-public class AuthenticationController extends BaseController<String>{
+public class AuthenticationController extends BaseController<AuthResponse>{
 
 
 
@@ -40,10 +31,10 @@ public class AuthenticationController extends BaseController<String>{
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> authenticate(
+    public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
     ) {
-        return  ResponseEntity.ok(service.authenticate(loginRequest).toString());
+        return  ResponseEntity.ok(service.authenticate(loginRequest));
 
         /*
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));

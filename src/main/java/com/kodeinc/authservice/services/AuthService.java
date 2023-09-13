@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 
 /**
  * @author Muyinda Rogers
@@ -10,5 +10,5 @@ import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
  */
 public interface AuthService {
 
-    public String authenticate(LoginRequest request);
+    public AuthResponse authenticate(LoginRequest request);
 }

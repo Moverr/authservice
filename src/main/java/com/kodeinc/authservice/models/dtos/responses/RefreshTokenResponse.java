@@ -1,6 +1,8 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -9,9 +11,11 @@ import java.util.Date;
  * @Date 2023-09-13
  * @Email moverr@gmail.com
  */
-@AllArgsConstructor
-public class RefreshToken {
+@Getter
+@Setter
+@Builder
+public class RefreshTokenResponse {
     private String refreshToken;
-    private Date expirationDate;
+    private String expirationDate;
 
 }
