@@ -64,12 +64,12 @@ public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectR
     }
 
     @Override
-    public Optional<ProjectResponseDTO> getByID(long id){
+    public ProjectResponseDTO getByID(long id){
         Optional<Project> optionalProject =  repository.findById(id);
         if(optionalProject.isEmpty()){
             throw new CustomNotFoundException("Record does not exist");
         }
-        return Optional.of(populate(optionalProject.get()));
+        return  populate(optionalProject.get());
     }
 
     @Override

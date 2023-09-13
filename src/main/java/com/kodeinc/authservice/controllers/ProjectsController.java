@@ -44,7 +44,7 @@ public class ProjectsController {
     }
 
     @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Optional<ProjectResponseDTO>> getById(@PathVariable(value = "id") long id){
+    public ResponseEntity<ProjectResponseDTO> getById(@PathVariable(value = "id") long id){
         return  ResponseEntity.ok(service.getByID(id));
     }
 

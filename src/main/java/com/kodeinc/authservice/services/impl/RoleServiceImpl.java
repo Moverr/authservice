@@ -28,8 +28,8 @@ import java.util.Optional;
     }
 
     @Override
-    public Optional<RoleResponseDTO> getByID(long id) {
-        return Optional.empty();
+    public RoleResponseDTO getByID(long id) {
+        return  null;
     }
 
     @Override

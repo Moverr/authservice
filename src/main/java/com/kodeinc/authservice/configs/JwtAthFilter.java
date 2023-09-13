@@ -33,15 +33,21 @@ public class JwtAthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        /*
+
         final String authHeader= request.getHeader(AUTHORIZATION);
         final  String userEmail;
         final  String jwtToken;
 
+        if(authHeader == null){
+            filterChain.doFilter(request,response);
+            return;
+        }
+/*
         if(authHeader != "" || !authHeader.startsWith("Bearer")){
             filterChain.doFilter(request,response);
             return;
         }
+        */
         jwtToken = authHeader.substring(BEGIN_INDEX);
         userEmail = jwtUtils.extractUsername(jwtToken);
       if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
@@ -55,15 +61,12 @@ public class JwtAthFilter extends OncePerRequestFilter {
                      new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
          SecurityContextHolder.getContext().setAuthentication(authToken);
+         filterChain.doFilter(request,response);
+
          }
       }
-        */
-
-        String requestURI = request.getRequestURI();
-        System.out.println("Request URI: " + requestURI);
 
 
-        filterChain.doFilter(request,response);
 
     }
 }
