@@ -4,6 +4,7 @@ import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
+import com.kodeinc.authservice.services.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,15 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("api/v1/auth")
-@RequiredArgsConstructor
+
 public class AuthenticationController extends BaseController<String>{
 
-@Autowired
-    private  AuthService service;
+
+
+    @Autowired
+    private  AuthServiceImpl service;
+
+
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
