@@ -3,6 +3,8 @@ package com.kodeinc.authservice.services.impl;
 import com.kodeinc.authservice.configs.CustomAuthenticationManager;
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.exceptions.CustomUnAuthorizedException;
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,42 +31,37 @@ public class AuthServiceImpl implements AuthService {
     private CustomAuthenticationManager authenticationManager;
 
     @Autowired
-    private   UserDetailServiceImpl userDetailsService;
+    private UserDetailServiceImpl userDetailsService;
 
     @Autowired
-    private   JwtUtils jwtUtils;
-
-
+    private JwtUtils jwtUtils;
 
 
     @Override
     public String authenticate(LoginRequest request) {
-        Authentication authentication = null;
-
-              authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-
-
-        if (authentication.isAuthenticated()) {
-
-            final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
-            if (user != null) {
-                return  populate(user);
-                        //ResponseEntity.ok(jwtUtils.generateToken(user));
-            }
-
-            return "";
-                    //ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            //.body("Invalid username or password");
-        }
-        else{
-            return " ";
-                    //ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        validateAuthentication(request.getUsername(), request.getPassword());
+        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
+        if (user == null)
+            throw new KhoodiUnAuthroizedException("User is not  Authorized ");
+        return populate(user);
     }
 
-    private String populate(UserDetails user){
+    /*
+     *
+     * Validate Authentications
+     * @Param username
+     * @Param password
+     */
+    public void validateAuthentication(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        if (!authentication.isAuthenticated())
+            throw new KhoodiUnAuthroizedException("Un Authorized Access");
 
-        return  jwtUtils.generateToken(user);
+    }
+
+    private String populate(UserDetails user) {
+
+        return jwtUtils.generateToken(user);
     }
 
 }
