@@ -33,6 +33,7 @@ public class JwtAthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        /*
         final String authHeader= request.getHeader(AUTHORIZATION);
         final  String userEmail;
         final  String jwtToken;
@@ -56,7 +57,13 @@ public class JwtAthFilter extends OncePerRequestFilter {
          SecurityContextHolder.getContext().setAuthentication(authToken);
          }
       }
-      filterChain.doFilter(request,response);
+        */
+
+        String requestURI = request.getRequestURI();
+        System.out.println("Request URI: " + requestURI);
+
+
+        filterChain.doFilter(request,response);
 
     }
 }

@@ -16,6 +16,15 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtils {
+    private static final long REFRESH_TOKEN_VALIDITY_SECONDS = 86400; // 24 hours
+
+    // Token expiration time for access tokens (in milliseconds)
+    public static final long AUTH_TOKEN_EXPIRATION_MS = 3600000; // 1 hour
+
+    // Token expiration time for refresh tokens (in milliseconds)
+    public static final long REFRESH_TOKEN_EXPIRATION_MS = 604800000; // 7 days
+
+
     private SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String extractUsername(String token) {
@@ -40,11 +49,6 @@ public class JwtUtils {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails);
-    }
-
-    private String createToken(Map<String, Object> claims, UserDetails userDetails) {
-
         return Jwts.builder()
                 .setClaims(claims).setSubject(userDetails.getUsername())
                 .claim("authorities",userDetails.getAuthorities())
@@ -52,6 +56,18 @@ public class JwtUtils {
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY_SECONDS * 1000))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

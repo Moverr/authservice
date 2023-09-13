@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @Date 2023-08-31
  * @Email moverr@gmail.com
  */
+@Component
 public class CustomAuthenticationManager implements AuthenticationManager {
     @Autowired
     private UserDetailsService userDetailsService;

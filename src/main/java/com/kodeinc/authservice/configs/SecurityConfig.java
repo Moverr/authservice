@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,13 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig   {
 
     @Autowired
-    private final JwtAthFilter jwtAthFilter;
+    private   JwtAthFilter jwtAthFilter;
     @Autowired
-    private final UserDetailsService userDetailsService;
+    private   UserDetailsService userDetailsService;
 
 
     @Bean
@@ -55,20 +53,26 @@ public class SecurityConfig   {
 
 
 
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        return  new CustomAuthenticationManager();
-    }
 
 
 
     @Bean
     public AuthenticationProvider authProvider() {
-        final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+
+        final CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false); //disable caching
+        //  provider.setPostAuthenticationChecks(differentLocationChecker());
+        return provider;
+
+
+       /* final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
       //  provider.setPostAuthenticationChecks(differentLocationChecker());
         return provider;
+        */
     }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

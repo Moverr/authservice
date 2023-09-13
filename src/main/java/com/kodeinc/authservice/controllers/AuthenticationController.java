@@ -1,19 +1,11 @@
 package com.kodeinc.authservice.controllers;
 
-import com.kodeinc.authservice.configs.JwtUtils;
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.services.AuthService;
-import lombok.RequiredArgsConstructor;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.services.impl.AuthServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -23,14 +15,15 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("api/v1/auth")
-@RequiredArgsConstructor
+
 public class AuthenticationController extends BaseController<AuthResponse>{
 
 
+
     @Autowired
-    private final AuthenticationManager authenticationManager;
-    @Autowired
-    private AuthService authService;
+    private  AuthServiceImpl service;
+
+
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
@@ -41,7 +34,24 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
     ) {
-        AuthResponse response = authService.authenticate(loginRequest);
-        return ResponseEntity.ok(response);
+        return  ResponseEntity.ok(service.authenticate(loginRequest));
+
+        /*
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
+
+            final UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+            if (user != null) {
+                return ResponseEntity.ok(jwtUtils.generateToken(user));
+            }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            //.body("Invalid username or password");
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        */
+
     }
 }

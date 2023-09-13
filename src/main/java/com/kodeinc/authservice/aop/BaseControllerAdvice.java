@@ -1,9 +1,6 @@
 package com.kodeinc.authservice.aop;
 
-import com.kodeinc.authservice.exceptions.CustomBadRequestException;
-import com.kodeinc.authservice.exceptions.CustomForbiddenRequestException;
-import com.kodeinc.authservice.exceptions.CustomNotFoundException;
-import com.kodeinc.authservice.exceptions.CustomUnAuthorizedException;
+import com.kodeinc.authservice.exceptions.*;
 import com.kodeinc.authservice.models.dtos.responses.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +23,7 @@ public class BaseControllerAdvice {
     ) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        return getErrorResponseDTOResponseEntity(e, status);
+        return getErrorResponseDTOResponseEntity(e, status,null);
     }
 
 
@@ -38,7 +35,7 @@ public class BaseControllerAdvice {
 
         HttpStatus status = HttpStatus.NOT_FOUND;
 
-        return getErrorResponseDTOResponseEntity(e, status);
+        return getErrorResponseDTOResponseEntity(e, status,null);
     }
 
 
@@ -48,7 +45,7 @@ public class BaseControllerAdvice {
     ) {
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        return getErrorResponseDTOResponseEntity(e, status);
+        return getErrorResponseDTOResponseEntity(e, status,null);
     }
 
     @ExceptionHandler(CustomForbiddenRequestException.class) // exception handled
@@ -57,7 +54,20 @@ public class BaseControllerAdvice {
     ) {
 
         HttpStatus status = HttpStatus.FORBIDDEN;
-        return getErrorResponseDTOResponseEntity(e, status);
+
+        return getErrorResponseDTOResponseEntity(e, status,null);
+    }
+
+
+
+    @ExceptionHandler(KhoodiUnAuthroizedException.class) // exception handled
+    public ResponseEntity<ErrorResponseDTO> khoodiUnAuthorizedAccess(
+            KhoodiUnAuthroizedException e
+    ) {
+
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        return getErrorResponseDTOResponseEntity(e, status,e.getBody());
     }
 
 
@@ -67,13 +77,13 @@ public class BaseControllerAdvice {
     ) {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        return getErrorResponseDTOResponseEntity(e, status);
+        return getErrorResponseDTOResponseEntity(e, status,null);
     }
 
 
 
 
-    private ResponseEntity<ErrorResponseDTO> getErrorResponseDTOResponseEntity(Exception e, HttpStatus status) {
+    private ResponseEntity<ErrorResponseDTO> getErrorResponseDTOResponseEntity(Exception e, HttpStatus status,String msgBody) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         e.printStackTrace(printWriter);
@@ -84,7 +94,7 @@ public class BaseControllerAdvice {
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .code(status.value())
-                .message(e.getMessage())
+                .message(e.getMessage() == null ? msgBody : e.getMessage() )
                 .timestamp(Timestamp.from(Instant.now()))
                 .status(String.valueOf(status.value()))
                 .build();

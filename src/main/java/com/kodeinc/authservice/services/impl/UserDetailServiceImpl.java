@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,7 +54,7 @@ public class UserDetailServiceImpl implements UserDetailsService{
         return  MANUAL_USERS.stream()
                 .filter(x-> Objects.equals(x.getUsername(), username))
                 .findFirst()
-                .orElseThrow( () ->  new UsernameNotFoundException("Bo user found Exception"));
+                .orElseThrow( () ->  new KhoodiUnAuthroizedException("User Not found Exception"));
 
     }
 }
