@@ -33,9 +33,4 @@ public class User extends BaseEntity{
     @Column(name = "enabled")
     private boolean enabled;
 
-
-
-
-
-
 }
