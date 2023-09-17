@@ -11,11 +11,16 @@ import lombok.Setter;
 @Setter
 public class Role  extends BaseEntity{
 
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project project;
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "code")
     private String code;
+
+
+    @Column(name = "issystem")
+    private Boolean isSystem;
+
 
 }

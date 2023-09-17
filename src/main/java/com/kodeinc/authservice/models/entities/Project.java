@@ -12,7 +12,6 @@ import java.util.List;
 @Table(name = "projects")
 @Getter
 @Setter
-
 public class Project extends BaseEntity{
 
 
@@ -26,8 +25,7 @@ public class Project extends BaseEntity{
     private String callbackUrl;
 
     @Transient
-    private List<Role> roles;
-
-    //todo: status
+    @OneToMany(mappedBy = "project")
+    private List<ProjectResource> resources;
 
 }
