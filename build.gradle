@@ -8,8 +8,13 @@ plugins {
 }
 
 group = 'com.kodeinc'
-version = '0.0.1-SNAPSHOT'
+version = 'v1.0.0-alpha'
 sourceCompatibility = '17'
+
+bootJar {
+	mainClass = 'com.kodeinc.authservice'
+}
+
 
 configurations {
 	compileOnly {
