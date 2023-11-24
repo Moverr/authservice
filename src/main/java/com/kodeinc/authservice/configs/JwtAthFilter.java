@@ -27,8 +27,6 @@ public class JwtAthFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtils jwtUtils;
-    private   String userEmail;
-    private  String jwtToken;
 
 
     @Override
@@ -41,8 +39,9 @@ public class JwtAthFilter extends OncePerRequestFilter {
         if(authHeader.startsWith("Bearer")) {
 
 
-            jwtToken = authHeader.substring(BEGIN_INDEX);
-            userEmail = jwtUtils.extractUsername(jwtToken);
+            final String  jwtToken = authHeader.substring(BEGIN_INDEX);
+            final String userEmail = jwtUtils.extractUsername(jwtToken);
+
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
