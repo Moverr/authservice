@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'com.kodeinc'
-version = '0.0.1-SNAPSHOT'
+version = 'v1.0.0-alpha-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
@@ -84,6 +84,10 @@ flyway{
 			'keyABC': 'valueXYZ',
 			'otherplaceholder': 'value123'
 	]
+}
+
+bootJar {
+	mainClass = 'com.kodeinc.authservice.AuthServiceApplication'
 }
 
 //flywayMigrate.dependsOn classes

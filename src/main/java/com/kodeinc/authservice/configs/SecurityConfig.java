@@ -37,6 +37,7 @@ public class SecurityConfig   {
                                  ("/actuator/**","/api/v1/auth/**")
 
                          .permitAll()
+                         .requestMatchers("/api/v1/projects/**").authenticated()
                          .requestMatchers("/").denyAll()
                          .anyRequest().authenticated()
                  )
