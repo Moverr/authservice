@@ -2,7 +2,6 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.exceptions.CustomUnAuthorizedException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;

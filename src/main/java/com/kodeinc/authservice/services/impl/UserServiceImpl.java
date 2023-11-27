@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.services.UsersService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,7 @@ import java.util.Objects;
  */
 
 @Service
-public class UserDetailServiceImpl implements UserDetailsService{
+public class UserServiceImpl implements UsersService, UserDetailsService{
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");

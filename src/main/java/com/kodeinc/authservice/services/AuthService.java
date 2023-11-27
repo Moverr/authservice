@@ -10,5 +10,5 @@ import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
  */
 public interface AuthService {
 
-    public AuthResponse authenticate(LoginRequest request);
+     AuthResponse authenticate(LoginRequest request);
 }

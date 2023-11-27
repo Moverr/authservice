@@ -28,7 +28,7 @@ public class BaseControllerAdvice {
 
 
 
-    @ExceptionHandler(CustomNotFoundException.class) // exception handled
+   @ExceptionHandler(CustomNotFoundException.class) // exception handled
     public ResponseEntity<ErrorResponseDTO> handleNotFoundRequest(
             Exception e
     ) {
@@ -39,7 +39,7 @@ public class BaseControllerAdvice {
     }
 
 
-    @ExceptionHandler(CustomUnAuthorizedException.class) // exception handled
+   @ExceptionHandler(CustomUnAuthorizedException.class) // exception handled
     public ResponseEntity<ErrorResponseDTO> handleNotAuthorizedRequest(
             Exception e
     ) {
@@ -48,7 +48,7 @@ public class BaseControllerAdvice {
         return getErrorResponseDTOResponseEntity(e, status,null);
     }
 
-    @ExceptionHandler(CustomForbiddenRequestException.class) // exception handled
+   @ExceptionHandler(CustomForbiddenRequestException.class) // exception handled
     public ResponseEntity<ErrorResponseDTO> handleForbiddenRequest(
             Exception e
     ) {
