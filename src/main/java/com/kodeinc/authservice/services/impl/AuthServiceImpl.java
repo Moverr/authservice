@@ -2,11 +2,13 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.dtos.responses.RoleResponse;
 import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
+import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.services.AuthService;
+import com.kodeinc.authservice.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,16 +34,19 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private RoleService roleService;
+
 
     @Override
     public AuthResponse authenticate(LoginRequest request) {
        validateAuthentication(request);
-         final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
-        if (user == null) {
+         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        if (userDetails == null) {
             throw new KhoodiUnAuthroizedException("Invalid username or password");
         }
 
-        return populate(user);
+        return populate(userDetails);
     }
 
     private Authentication validateAuthentication(LoginRequest request) {
@@ -63,16 +68,13 @@ public class AuthServiceImpl implements AuthService {
         userResponse.setUsername(user.getUsername());
 
         userResponse.setRoles(
-                user.getAuthorities().stream().map(item ->{
-                    RoleResponse  role =  new RoleResponse();
-                    role.setRole(item.toString());
-                    return  role;
-                }).collect(Collectors.toList())
+                user.getAuthorities().stream().map(item -> roleService.populate((Role) item)
+                ).collect(Collectors.toList())
         );
 
 
         AuthResponse response =  new AuthResponse();
-        response.setMessage("Logged in succesfuly");
+        response.setMessage(Constants.SUCCESSFUL_LOGIN_MSG);
         response.setSuccess(user.isEnabled());
         response.setAuthToken(token);
         response.setRefreshToken(refreshToken);
