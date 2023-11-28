@@ -41,6 +41,17 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                //todo: some implementation needed
+                .formLogin(customizer -> customizer
+                        .loginPage("/login") // Custom login page
+                        .permitAll()
+                        .loginProcessingUrl("/login") // URL for form submission
+                        .defaultSuccessUrl("/dashboard", true) // Redirect after successful login
+                        .failureUrl("/login?error=true") // Redirect after failed login
+                        .usernameParameter("username") // Custom parameter names in the login form
+                        .passwordParameter("password")
+                )
+
 
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
