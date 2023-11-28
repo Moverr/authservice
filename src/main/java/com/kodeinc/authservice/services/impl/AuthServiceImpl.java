@@ -34,8 +34,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse authenticate(LoginRequest request) {
-        validateAuthentication(request);
-        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
+       validateAuthentication(request);
+         final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
         if (user == null) {
             throw new KhoodiUnAuthroizedException("Invalid username or password");
         }

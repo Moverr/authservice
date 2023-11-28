@@ -55,17 +55,12 @@ public class JwtUtils {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
-
-
     }
-
 
 
     public static String getUsernameFromToken(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
-
-
 
 
     public static Boolean validateToken(String token, UserDetails userDetails) {
@@ -74,6 +69,7 @@ public class JwtUtils {
     }
 
     /*
+    * Other Implementation
     public static boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);

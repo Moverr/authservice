@@ -26,6 +26,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController extends BaseController<AuthResponse>{
 
+    /*
+    *
+    * The Authentication controller, manages the login, authentications,
+    *  Access Tokens, Reset Tokens
+     */
 
     @Autowired
     private final AuthenticationManager authenticationManager;
@@ -34,7 +39,7 @@ public class AuthenticationController extends BaseController<AuthResponse>{
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
-       return ResponseEntity.ok("TEsted");
+       return ResponseEntity.ok("tested");
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
