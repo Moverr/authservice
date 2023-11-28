@@ -11,7 +11,7 @@ spring:
   zipkin:
     enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/dev?currentSchema=auth_db
+    url: jdbc:postgresql://127.0.0.1/dev?currentSchema=auth_db
     username: postgres
     password: admin
     driverClassName: org.postgresql.Driver
