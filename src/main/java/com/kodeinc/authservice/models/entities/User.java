@@ -1,10 +1,10 @@
 package com.kodeinc.authservice.models.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 /**
  * @author Muyinda Rogers
@@ -25,5 +25,16 @@ public class User extends BaseEntity{
 
     @Column(name = "enabled")
     private boolean enabled;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+
 
 }

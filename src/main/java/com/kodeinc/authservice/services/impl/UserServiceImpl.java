@@ -1,18 +1,20 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.models.entities.Role;
+import com.kodeinc.authservice.models.entities.User;
+import com.kodeinc.authservice.repositories.UserRepository;
 import com.kodeinc.authservice.services.UsersService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Muyinda Rogers
@@ -28,6 +30,10 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
 
 
 
+    @Autowired
+    private UserRepository userRepository;
+
+    /*
     private final  static List<UserDetails> MANUAL_USERS = Arrays.asList(
             new User(
                     "moverr@gmail.com",
@@ -41,6 +47,7 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
             )
 
     );
+    */
 
     // Development..
     public  UserDetails findUserByEmail(String username){
@@ -51,10 +58,42 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        Optional<User> userx = userRepository.findByUsername(username);
+
+        User user = userx.orElseThrow(() -> new UsernameNotFoundException("User does not exist in the system"));
+/*
+This will soon disappear
         return  MANUAL_USERS.stream()
                 .filter(x-> Objects.equals(x.getUsername(), username))
                 .findFirst()
                 .orElseThrow( () ->  new UsernameNotFoundException("User does not exist in the system"));
 
     }
+    */
+
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.isEnabled(),
+                true, true, true,
+                getAuthorities(user.getRoles())
+        );
+    }
+
+
+    private Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
+        return roles.stream()
+                .flatMap(role -> role.getPermissions().stream())
+                /*
+                * todo: add permissions  ids to the role
+                *  The major reason, is a permission will have more than one user case
+                *  When populating user data, we need to fetch the entire permission record ..
+                 */
+                .map(permission -> new SimpleGrantedAuthority(permission.getId().toString()))
+                .collect(Collectors.toSet());
+    }
+
+
 }
