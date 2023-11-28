@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.services;
 
+import com.kodeinc.authservice.dtos.responses.RoleResponse;
 import com.kodeinc.authservice.models.entities.Role;
 
 import java.util.List;
@@ -12,4 +13,5 @@ import java.util.Set;
  */
 public interface RoleService {
     Set<Role> findRoles(List<Long> roleIds);
+     RoleResponse populate(Role eneity);
 }

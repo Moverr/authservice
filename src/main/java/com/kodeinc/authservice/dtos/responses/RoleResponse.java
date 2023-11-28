@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 public class RoleResponse {
     @JsonProperty("name")
-    private String role;
+    private String name;
     @JsonProperty("permissions")
     private List<String> permissions;
 }

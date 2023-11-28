@@ -134,6 +134,9 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
 
     public UserResponse populate(User entity){
         UserResponse userResponse = new UserResponse();
+        userResponse.setUsername(entity.getUsername());
+        userResponse.setRoles( entity.getRoles().stream().map(x->roleService.populate(x)).collect(Collectors.toList()));
+
         return userResponse;
     }
 
