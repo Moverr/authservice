@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.dtos.responses;
+package com.kodeinc.authservice.models.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
