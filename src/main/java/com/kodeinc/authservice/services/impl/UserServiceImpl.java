@@ -62,15 +62,15 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
         Optional<User> userx = userRepository.findByUsername(username);
 
         User user = userx.orElseThrow(() -> new UsernameNotFoundException("User does not exist in the system"));
-/*
-This will soon disappear
-        return  MANUAL_USERS.stream()
-                .filter(x-> Objects.equals(x.getUsername(), username))
-                .findFirst()
-                .orElseThrow( () ->  new UsernameNotFoundException("User does not exist in the system"));
+    /*
+    This will soon disappear
+            return  MANUAL_USERS.stream()
+                    .filter(x-> Objects.equals(x.getUsername(), username))
+                    .findFirst()
+                    .orElseThrow( () ->  new UsernameNotFoundException("User does not exist in the system"));
 
-    }
-    */
+        }
+        */
 
 
         return new org.springframework.security.core.userdetails.User(
