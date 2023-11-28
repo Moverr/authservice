@@ -12,7 +12,7 @@ import lombok.Setter;
  * @Email moverr@gmail.com
  */
 @Entity
-@Table(name = "roles")
+@Table(name = "users")
 @Getter
 @Setter
 public class User extends BaseEntity{
@@ -22,13 +22,6 @@ public class User extends BaseEntity{
     @Column(name = "password")
     private String password;
 
-
-    @Column(name = "firstname")
-    private String firstname;
-
-
-    @Column(name = "lastname")
-    private String lastname;
 
     @Column(name = "enabled")
     private boolean enabled;

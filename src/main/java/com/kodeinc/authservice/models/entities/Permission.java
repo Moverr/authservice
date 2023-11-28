@@ -13,7 +13,6 @@ import lombok.Setter;
 public class Permission extends BaseEntity{
 
 
-
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
