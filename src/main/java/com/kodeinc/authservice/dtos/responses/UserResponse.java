@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.models.dtos.responses;
+package com.kodeinc.authservice.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -8,17 +8,19 @@ import java.util.List;
 
 /**
  * @author Muyinda Rogers
- * @Date 2023-09-10
+ * @Date 2023-11-28
  * @Email moverr@gmail.com
  */
-
 @Getter
 @Setter
 public class UserResponse {
     @JsonProperty("username")
     private String username;
+
+    //todo: implement role and permissions .
     @JsonProperty("roles")
-    private List<String> roles;
-    @JsonProperty("permissions")
-    private List<String> permissions;
+    private List<RoleResponse> roles;
+
+
+
 }

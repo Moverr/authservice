@@ -8,8 +8,13 @@ plugins {
 }
 
 group = 'com.kodeinc'
-version = 'v1.0.0-alpha-SNAPSHOT'
+version = 'v1.0.0-alpha'
 sourceCompatibility = '17'
+
+bootJar {
+	mainClass = 'com.kodeinc.authservice.AuthServiceApplication'
+}
+
 
 configurations {
 	compileOnly {
@@ -84,10 +89,6 @@ flyway{
 			'keyABC': 'valueXYZ',
 			'otherplaceholder': 'value123'
 	]
-}
-
-bootJar {
-	mainClass = 'com.kodeinc.authservice.AuthServiceApplication'
 }
 
 //flywayMigrate.dependsOn classes

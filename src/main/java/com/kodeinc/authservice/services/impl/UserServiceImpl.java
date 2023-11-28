@@ -1,6 +1,6 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
+import com.kodeinc.authservice.services.UsersService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 
 @Service
-public class UserDetailServiceImpl implements UserDetailsService{
+public class UserServiceImpl implements UsersService, UserDetailsService{
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");
@@ -54,7 +54,7 @@ public class UserDetailServiceImpl implements UserDetailsService{
         return  MANUAL_USERS.stream()
                 .filter(x-> Objects.equals(x.getUsername(), username))
                 .findFirst()
-                .orElseThrow( () ->  new KhoodiUnAuthroizedException("User Not found Exception"));
+                .orElseThrow( () ->  new UsernameNotFoundException("User does not exist in the system"));
 
     }
 }

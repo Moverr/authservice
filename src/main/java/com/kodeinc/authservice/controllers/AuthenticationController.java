@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.controllers;
 
+import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.services.impl.AuthServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 public class AuthenticationController extends BaseController<AuthResponse>{
 
+    /*
+    *
+    * The Authentication controller, manages the login, authentications,
+    *  Access Tokens, Reset Tokens
+     */
 
 
     @Autowired
@@ -27,7 +32,7 @@ public class AuthenticationController extends BaseController<AuthResponse>{
 
     @GetMapping
     public  ResponseEntity<String> authenticate(){
-       return ResponseEntity.ok("TEsted");
+       return ResponseEntity.ok("tested");
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
