@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .formLogin(customizer -> customizer
                         .loginPage("/login") // Custom login page
                         .permitAll()
-                        .loginProcessingUrl("/authenticate") // URL for form submission
+                        .loginProcessingUrl("/login") // URL for form submission
                         .defaultSuccessUrl("/dashboard", true) // Redirect after successful login
                         .failureUrl("/login?error=true") // Redirect after failed login
                         .usernameParameter("username") // Custom parameter names in the login form
