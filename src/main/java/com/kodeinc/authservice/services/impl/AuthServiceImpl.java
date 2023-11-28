@@ -2,6 +2,7 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.services.AuthService;
@@ -12,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 /**
  * @author Muyinda Rogers
@@ -24,8 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private UserDetailsService userDetailsService;
-    @Autowired
-    private JwtUtils jwtUtils;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -51,12 +53,24 @@ public class AuthServiceImpl implements AuthService {
 
     private AuthResponse populate(UserDetails user) {
 
-        String token = jwtUtils.generateToken(user);
+        String token = JwtUtils.generateToken(user);
+        String refreshToken = JwtUtils.refreshJwtToken(token);
 
-        //todo: generate token.
-        // todo : add user details
+
+        UserResponse userResponse = new UserResponse();
+        //userResponse.setPermissions(use);
+        userResponse.setUsername(user.getUsername());
+        userResponse.setRoles(user.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+
+
+
 
         AuthResponse response =  new AuthResponse();
+        response.setMessage("Logged in succesfuly");
+        response.setSuccess(user.isEnabled());
+        response.setAuthToken(token);
+        response.setRefreshToken(refreshToken);
+        response.setUser(userResponse);
 
         return response;
     }
