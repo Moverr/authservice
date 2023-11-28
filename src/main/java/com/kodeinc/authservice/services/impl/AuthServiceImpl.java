@@ -63,8 +63,6 @@ public class AuthServiceImpl implements AuthService {
         userResponse.setRoles(user.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
 
 
-
-
         AuthResponse response =  new AuthResponse();
         response.setMessage("Logged in succesfuly");
         response.setSuccess(user.isEnabled());
