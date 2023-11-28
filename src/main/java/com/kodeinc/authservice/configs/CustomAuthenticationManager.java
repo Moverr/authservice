@@ -25,6 +25,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         return new BCryptPasswordEncoder();
 
     }
+
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override

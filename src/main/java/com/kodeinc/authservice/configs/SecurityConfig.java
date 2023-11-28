@@ -24,9 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    private   JwtAthFilter jwtAthFilter;
+    private JwtAthFilter jwtAthFilter;
     @Autowired
-    private  UserDetailsService uds;
+    private UserDetailsService uds;
 
 
     @Bean
@@ -36,7 +36,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers
-                                ("/","/actuator/**", "/api/v1/auth/**")
+                                ("/", "/actuator/**", "/api/v1/auth/**")
                         .permitAll()
                         .requestMatchers("/admin").hasAnyAuthority("ALL_FUNCTIONS", "SUPER_ADMINs")
 
