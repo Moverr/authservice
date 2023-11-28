@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.controllers;
 
+import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.services.impl.AuthServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

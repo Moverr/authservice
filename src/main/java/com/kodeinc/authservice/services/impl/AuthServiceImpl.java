@@ -2,6 +2,7 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.dtos.responses.RoleResponse;
 import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
@@ -60,7 +61,14 @@ public class AuthServiceImpl implements AuthService {
         UserResponse userResponse = new UserResponse();
         //userResponse.setPermissions(use);
         userResponse.setUsername(user.getUsername());
-        userResponse.setRoles(user.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+
+        userResponse.setRoles(
+                user.getAuthorities().stream().map(item ->{
+                    RoleResponse  role =  new RoleResponse();
+                    role.setRole(item.toString());
+                    return  role;
+                }).collect(Collectors.toList())
+        );
 
 
         AuthResponse response =  new AuthResponse();
