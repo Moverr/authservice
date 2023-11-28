@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@Component
+@Configuration
 public class JwtAthFilter extends OncePerRequestFilter {
     public static final int BEGIN_INDEX = 7;
 

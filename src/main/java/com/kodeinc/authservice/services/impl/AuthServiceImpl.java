@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
     private Authentication validateAuthentication(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        if (authentication.isAuthenticated())
+        if (!authentication.isAuthenticated())
             throw new KhoodiUnAuthroizedException("Un Authorized Access");
 
         return authentication;
@@ -56,9 +56,7 @@ public class AuthServiceImpl implements AuthService {
         //todo: generate token.
         // todo : add user details
 
-        AuthResponse response = AuthResponse.builder()
-                .authToken(token)
-                .build();
+        AuthResponse response =  new AuthResponse();
 
         return response;
     }

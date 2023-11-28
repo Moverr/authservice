@@ -54,7 +54,7 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
         return  MANUAL_USERS.stream()
                 .filter(x-> Objects.equals(x.getUsername(), username))
                 .findFirst()
-                .orElseThrow( () ->  new UsernameNotFoundException("Bo user found Exception"));
+                .orElseThrow( () ->  new UsernameNotFoundException("The user found Exception"));
 
     }
 }

@@ -62,6 +62,10 @@ public class SecurityConfig {
         return new CustomAuthenticationManager();
     }
 
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+//        return config.getAuthenticationManager();
+//    }
 
     @Bean
     public AuthenticationProvider authProvider() {
@@ -72,10 +76,6 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -30,13 +30,16 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String password = authentication.getCredentials().toString();
+        String password = authentication.getCredentials().toString().trim();
         String hashedPassword = passwordEncoder.encode(password);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (passwordEncoder().matches(hashedPassword, userDetails.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        String savedPassword = userDetails.getPassword();
+
+
+        if (passwordEncoder().matches(password, userDetails.getPassword())) {
+            return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
         } else {
             throw new BadCredentialsException("Invalid username or password");
         }
