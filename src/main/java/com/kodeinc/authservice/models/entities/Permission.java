@@ -18,7 +18,8 @@ public class Permission extends BaseEntity  {
     private String name;
 
     @Column(name = "create")
-    private String create;
+    @Enumerated(EnumType.STRING)
+    private PermissionLevelEnum create;
 
     @Column(name = "read")
     @Enumerated(EnumType.STRING)
