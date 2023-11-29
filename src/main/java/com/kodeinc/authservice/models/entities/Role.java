@@ -3,6 +3,7 @@ package com.kodeinc.authservice.models.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Table(name = "roles")
 @Getter
 @Setter
-public class Role  extends BaseEntity{
+public class Role  extends BaseEntity  {
 
 
     @Column(name = "name")
@@ -33,7 +34,6 @@ public class Role  extends BaseEntity{
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions;
-
 
 
 

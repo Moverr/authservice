@@ -3,21 +3,19 @@ package com.kodeinc.authservice.services.impl;
 import com.kodeinc.authservice.dtos.requests.UserRequest;
 import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.User;
 import com.kodeinc.authservice.repositories.UserRepository;
 import com.kodeinc.authservice.services.RoleService;
 import com.kodeinc.authservice.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,53 +42,29 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
     @Autowired
     private RoleService roleService;
 
-    /*
-    private final  static List<UserDetails> MANUAL_USERS = Arrays.asList(
-            new User(
-                    "moverr@gmail.com",
-                    hashedPassword,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"))
-            ),
-            new User(
-                    "user.mail@gmail.com",
-                    hashedPassword,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USEr"))
-            )
 
-    );
-    */
 
     // Development..
     public  UserDetails findUserByEmail(String username){
         return  this.loadUserByUsername(username);
-
-
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
 
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
         User user = optionalUser.orElseThrow(() -> new UsernameNotFoundException("User does not exist in the system"));
-    /*
-    This will soon disappear
-            return  MANUAL_USERS.stream()
-                    .filter(x-> Objects.equals(x.getUsername(), username))
-                    .findFirst()
-                    .orElseThrow( () ->  new UsernameNotFoundException("User does not exist in the system"));
 
-        }
-        */
-
-
-        return new org.springframework.security.core.userdetails.User(
+        return new CustomUserDetails(
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                true, true, true,
-                getAuthorities(user.getRoles())
+                true, true, true,user.getAuthorities(),user.getRoles()
         );
+
+
     }
 
     @Override
@@ -117,18 +91,6 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
     }
 
 
-    private Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
-        return roles.stream()
-                .flatMap(role -> role.getPermissions().stream())
-                /*
-                * todo: add permissions  ids to the role
-                *  The major reason, is a permission will have more than one user case
-                *  When populating user data, we need to fetch the entire permission record ..
-                 */
-                .map(permission -> new SimpleGrantedAuthority(permission.getId().toString()))
-                .collect(Collectors.toSet());
-    }
-
 
 
 
@@ -136,7 +98,6 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
         UserResponse userResponse = new UserResponse();
         userResponse.setUsername(entity.getUsername());
         userResponse.setRoles( entity.getRoles().stream().map(x->roleService.populate(x)).collect(Collectors.toList()));
-
         return userResponse;
     }
 

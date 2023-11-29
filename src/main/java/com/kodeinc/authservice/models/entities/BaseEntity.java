@@ -1,6 +1,10 @@
 package com.kodeinc.authservice.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,11 +37,16 @@ public class BaseEntity implements Serializable {
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     @ColumnDefault("now()")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
     @ColumnDefault("now()")
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updatedAt;
 
     @JsonProperty("updated_by")

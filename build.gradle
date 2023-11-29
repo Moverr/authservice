@@ -52,6 +52,7 @@ dependencies {
 //	compile group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.10.5'
 //Thanks for using https://jar-download.com
 
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
 
 
 	compileOnly "org.projectlombok:lombok"

@@ -6,15 +6,13 @@ import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.models.entities.Role;
+import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserServiceImpl userDetailsService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -41,11 +39,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse authenticate(LoginRequest request) {
        validateAuthentication(request);
-         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+         final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         if (userDetails == null) {
             throw new KhoodiUnAuthroizedException("Invalid username or password");
         }
-
         return populate(userDetails);
     }
 
@@ -57,19 +54,18 @@ public class AuthServiceImpl implements AuthService {
         return authentication;
     }
 
-    private AuthResponse populate(UserDetails user) {
+    private AuthResponse populate(CustomUserDetails user) {
 
         String token = JwtUtils.generateToken(user);
         String refreshToken = JwtUtils.refreshJwtToken(token);
 
 
         UserResponse userResponse = new UserResponse();
-        //userResponse.setPermissions(use);
         userResponse.setUsername(user.getUsername());
 
         userResponse.setRoles(
-                user.getAuthorities().stream().map(item -> roleService.populate((Role) item)
-                ).collect(Collectors.toList())
+               user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())
+
         );
 
 
