@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.configs;
+package com.kodeinc.authservice.configs.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

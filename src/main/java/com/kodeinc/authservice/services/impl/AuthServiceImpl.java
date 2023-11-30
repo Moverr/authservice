@@ -1,6 +1,6 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.configs.JwtUtils;
+import com.kodeinc.authservice.configs.security.JwtUtils;
 import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;

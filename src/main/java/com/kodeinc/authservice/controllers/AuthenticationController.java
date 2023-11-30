@@ -34,7 +34,6 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     public  ResponseEntity<String> authenticate(){
        return ResponseEntity.ok("tested");
     }
-
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest

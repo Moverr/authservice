@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.configs;
+package com.kodeinc.authservice.configs.security;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -26,6 +28,10 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService uds;
 
+    private static final String[] WHITE_LIST = {
+            "/","/actuator/**","/api/v1/auth/**"
+    };
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,13 +39,14 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers
-                                ("/", "/actuator/**", "/api/v1/auth/**")
-                        .permitAll()
+                        .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers("/admin").hasAnyAuthority("ALL_FUNCTIONS", "SUPER_ADMINs")
 
                         .anyRequest().authenticated()
                 )
+
+                .formLogin(AbstractHttpConfigurer::disable)
+
 
                 //todo: some implementation needed
                 .formLogin(customizer -> customizer
@@ -62,6 +69,18 @@ public class SecurityConfig {
 
 
         return http.build();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer(){
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("*");
+            }
+        };
     }
 
 
@@ -88,13 +107,5 @@ public class SecurityConfig {
 
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//    return  new UserDetailsService() {
-//        @Override
-//        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//            return userDAO.findUserByEmail(username);
-//        }
-//    };
-//    }
+
 }
