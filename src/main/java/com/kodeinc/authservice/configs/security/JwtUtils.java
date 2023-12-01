@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtils {
-    private static SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final static SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public static String extractUsername(String token)  throws KhoodiUnAuthroizedException{
         try{
@@ -55,12 +55,28 @@ public class JwtUtils {
 
     public static String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("authorities", userDetails.getAuthorities());
+
+
         return Jwts.builder()
-                .setClaims(claims).setSubject(userDetails.getUsername())
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+
+
+        /*
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
                 .claim("authorities",userDetails.getAuthorities())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+        */
     }
 
     public static String refreshJwtToken(String token) {
