@@ -1,5 +1,7 @@
 package com.kodeinc.authservice.configs.security;
 
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
+import com.kodeinc.authservice.helpers.Constants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +18,14 @@ import java.util.function.Function;
 public class JwtUtils {
     private static SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public static String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public static String extractUsername(String token)  throws KhoodiUnAuthroizedException{
+        try{
+            return extractClaim(token, Claims::getSubject);
+        }
+        catch (Exception er){
+            throw new KhoodiUnAuthroizedException(Constants.INVALID_TOKEN);
+        }
+
     }
 
     public static Date extractExpiration(String token) {
@@ -28,9 +36,18 @@ public class JwtUtils {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
+
+
     public static Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        System.out.println("Token : "+token);
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token.trim())
+                .getBody();
     }
+
 
     private static Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());

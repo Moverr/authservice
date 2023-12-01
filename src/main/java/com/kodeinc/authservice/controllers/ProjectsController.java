@@ -26,6 +26,11 @@ public class ProjectsController {
     @Autowired
     ProjectServiceImpl service;
 
+    @GetMapping("/test")
+    public String test(){
+        return  "testing";
+    }
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectResponseDTO> create(@RequestBody @Valid ProjectRequest request){
         return  ResponseEntity.ok(service.create(request));
