@@ -1,7 +1,5 @@
 package com.kodeinc.authservice.controllers;
 
-import com.kodeinc.authservice.configs.security.JwtUtils;
-import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.services.AuthService;
@@ -9,7 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Muyinda Rogers
@@ -33,7 +34,8 @@ public class AuthenticationController extends BaseController<AuthResponse>{
 
 
     /*
-    Validate request token and respond with full details of the principal
+    *
+      Validate request token and respond with full details of the principal
      */
 
     @PostMapping("/validate")
