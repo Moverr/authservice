@@ -30,7 +30,7 @@ public class SecurityConfig {
     private UserDetailsService uds;
 
     private static final String[] WHITE_LIST = {
-            "/","/actuator/**"
+            "/","/actuator/**","api/v1/auth","api/v1/auth/validate"
     };
 
 

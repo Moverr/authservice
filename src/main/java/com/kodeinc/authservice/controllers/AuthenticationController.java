@@ -31,7 +31,6 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     @Autowired
     private AuthService service;
 
-    //todo: request refresh token
 
     /*
     Validate request token and respond with full details of the principal
@@ -46,8 +45,8 @@ public class AuthenticationController extends BaseController<AuthResponse>{
          else
              throw new KhoodiUnAuthroizedException("Invalid or missing token");
 
-
     }
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
