@@ -9,6 +9,7 @@ import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.RoleService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,13 +36,22 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RoleService roleService;
 
-    public AuthResponse authenticate(String  tokenString) throws  KhoodiUnAuthroizedException{
-        final String userName = JwtUtils.extractUsername(tokenString.trim());
-        final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-        if (userDetails == null) {
-            throw new KhoodiUnAuthroizedException("Invalid username or password");
+    public AuthResponse authenticate(HttpServletRequest request) throws  KhoodiUnAuthroizedException{
+
+        String token = JwtUtils.extractToken(request);
+
+        if (token != null && JwtUtils.validateToken(token))
+        {
+            final String userName = JwtUtils.extractUsername(token.trim());
+            final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+            if (userDetails == null) {
+                throw new KhoodiUnAuthroizedException("Invalid username or password");
+            }
+            return populate(userDetails);
         }
-        return populate(userDetails);
+        else
+          throw new KhoodiUnAuthroizedException("Invalid or missing token");
+
     }
 
     @Override

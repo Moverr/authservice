@@ -38,13 +38,7 @@ public class AuthenticationController extends BaseController<AuthResponse>{
 
     @PostMapping("/validate")
     public  ResponseEntity<AuthResponse>  validateToken(final HttpServletRequest request){
-        String token = JwtUtils.extractToken(request);
-
-        if (token != null && JwtUtils.validateToken(token))
-            return  ResponseEntity.ok(service.authenticate(token));
-         else
-             throw new KhoodiUnAuthroizedException("Invalid or missing token");
-
+            return  ResponseEntity.ok(service.authenticate(request));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -53,4 +47,8 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     ) {
         return  ResponseEntity.ok(service.authenticate(loginRequest));
     }
+
+
+    //todo: we can validate
+    //todo: we can
 }
