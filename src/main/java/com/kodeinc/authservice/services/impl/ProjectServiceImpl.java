@@ -28,6 +28,9 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
+    private String permission = "PROJECTS";
+
+
     @Autowired
     private ProjectRepository repository;
 
@@ -35,7 +38,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponseDTO create(HttpServletRequest httpServletRequest,ProjectRequest request) throws CustomBadRequestException {
         log.info("ProjectServiceImpl   create method");
-       List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
+
+        //todo: validate user access
+
+
+        List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
        if(!projectList.isEmpty()){
            throw new CustomBadRequestException("Project Already Exists");
        }

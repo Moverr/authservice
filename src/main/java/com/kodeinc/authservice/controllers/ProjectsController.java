@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,11 +24,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/projects")
 @Validated
-public class ProjectsController {
+public class ProjectsController  extends BaseController<ProjectResponseDTO>{
 
 
     @Autowired
     ProjectService service;
+
+    // CLIENT SHOULD HAVE PERMISSION PROJECTS
+    // WILL ALSO LOOK AT ACCESS LEVEL OF CREATE
 
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -45,8 +49,6 @@ public class ProjectsController {
            @RequestParam(value="limit",defaultValue = "20")    int limit,
            @RequestParam(value="sort_by",defaultValue = "updated_at") String sortBy,
            @RequestParam(value="sort_type",defaultValue = "updated_at") String sortType
-
-
            ){
         SearchRequest request = new SearchRequest(query,offset,limit,sortBy,sortType);
         return ResponseEntity.ok( service.list(httpServletRequest,request));
