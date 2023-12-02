@@ -1,14 +1,15 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.configs.JwtUtils;
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.dtos.responses.UserResponse;
+import com.kodeinc.authservice.configs.security.JwtUtils;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.RoleService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,23 +36,42 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RoleService roleService;
 
+    public AuthResponse refresh(HttpServletRequest request) {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+
+    public AuthResponse authenticate(HttpServletRequest request) throws KhoodiUnAuthroizedException {
+
+        String token = JwtUtils.extractToken(request);
+
+        if (token != null && JwtUtils.validateToken(token)) {
+            final String userName = JwtUtils.extractUsername(token.trim());
+            final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+            if (userDetails == null) {
+                throw new KhoodiUnAuthroizedException("Invalid username or password");
+            }
+            return populate(userDetails);
+        } else
+            throw new KhoodiUnAuthroizedException("Invalid or missing token");
+
+    }
 
     @Override
     public AuthResponse authenticate(LoginRequest request) {
-       validateAuthentication(request);
-         final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        validateAuthentication(request);
+        final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         if (userDetails == null) {
             throw new KhoodiUnAuthroizedException("Invalid username or password");
         }
         return populate(userDetails);
     }
 
-    private Authentication validateAuthentication(LoginRequest request) {
+    private void validateAuthentication(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (!authentication.isAuthenticated())
             throw new KhoodiUnAuthroizedException("Un Authorized Access");
 
-        return authentication;
     }
 
     private AuthResponse populate(CustomUserDetails user) {
@@ -64,12 +84,12 @@ public class AuthServiceImpl implements AuthService {
         userResponse.setUsername(user.getUsername());
 
         userResponse.setRoles(
-               user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())
+                user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())
 
         );
 
 
-        AuthResponse response =  new AuthResponse();
+        AuthResponse response = new AuthResponse();
         response.setMessage(Constants.SUCCESSFUL_LOGIN_MSG);
         response.setSuccess(user.isEnabled());
         response.setAuthToken(token);

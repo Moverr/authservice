@@ -1,9 +1,10 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.dtos.responses.RoleResponse;
 import com.kodeinc.authservice.models.dtos.requests.RoleRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
+import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
+import com.kodeinc.authservice.models.dtos.responses.RoleResponse;
 import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.Role;
@@ -57,10 +58,24 @@ import java.util.stream.Collectors;
 
 
 
-    public  RoleResponse populate(Role entity){
+    public RoleResponse populate(Role entity){
         RoleResponse roleResponse = new RoleResponse();
         roleResponse.setName(entity.getName());
-        roleResponse.setPermissions(entity.getPermissions().stream().map(Permission::getName).collect(Collectors.toList()));
+        roleResponse.setPermissions(entity.getPermissions().stream().map(this::populate).collect(Collectors.toList()));
         return  roleResponse;
+    }
+
+    public PermissionResponse populate(Permission entity){
+
+        PermissionResponse permissionResponse = new PermissionResponse();
+        permissionResponse.setName(entity.getName());
+        permissionResponse.setRead(entity.getRead());
+        permissionResponse.setCreate(entity.getCreate());
+        permissionResponse.setUpdate(entity.getUpdate());
+        permissionResponse.setDelete(entity.getDelete());
+        permissionResponse.setResource(entity.getResource());
+
+
+        return  permissionResponse;
     }
 }

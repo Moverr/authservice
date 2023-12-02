@@ -1,6 +1,6 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.dtos.responses.RoleResponse;
+import com.kodeinc.authservice.models.dtos.responses.RoleResponse;
 import com.kodeinc.authservice.models.entities.Role;
 
 import java.util.List;

@@ -2,8 +2,12 @@ package com.kodeinc.authservice.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kodeinc.authservice.exceptions.CustomExceptionResponse;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.services.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -17,6 +21,15 @@ import java.time.LocalDateTime;
 
 @Slf4j
 public class BaseController<T> {
+
+
+    @Autowired
+    private AuthService service;
+
+    private AuthResponse validateAuth(HttpServletRequest request){
+        return  service.authenticate(request);
+    }
+
 
     ResponseEntity<T> errorToDispatch(ImmutablePair<HttpStatus, String> errorMessage) {
         if (!errorMessage.getLeft().equals(HttpStatus.OK)) {
