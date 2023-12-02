@@ -4,6 +4,7 @@ package com.kodeinc.authservice.configs.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,7 +30,7 @@ public class SecurityConfig {
     private UserDetailsService uds;
 
     private static final String[] WHITE_LIST = {
-            "/","/actuator/**","/api/v1/auth/**"
+            "/","/actuator/**"
     };
 
 
@@ -40,8 +41,9 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST).permitAll()
-                        .requestMatchers("/admin").hasAnyAuthority("ALL_FUNCTIONS", "SUPER_ADMINs")
-
+                        .requestMatchers("/admin").hasAnyAuthority("ALL_FUNCTIONS", "SUPER_ADMIN")
+                   // testing out     .requestMatchers(HttpMethod.GET,"/see").hasAnyAuthority("")
+                     //   .requestMatchers("api/v1/projects/test").hasAnyAuthority("ALL_FUNCTIONS_CREATE")
                         .anyRequest().authenticated()
                 )
 

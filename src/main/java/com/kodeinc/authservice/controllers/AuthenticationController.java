@@ -1,8 +1,11 @@
 package com.kodeinc.authservice.controllers;
 
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.configs.security.JwtUtils;
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.services.impl.AuthServiceImpl;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.services.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +29,24 @@ public class AuthenticationController extends BaseController<AuthResponse>{
 
 
     @Autowired
-    private  AuthServiceImpl service;
+    private AuthService service;
+
+    //todo: request refresh token
+
+    /*
+    Validate request token and respond with full details of the principal
+     */
+
+    @PostMapping("/validate")
+    public  ResponseEntity<AuthResponse>  validateToken(final HttpServletRequest request){
+        String token = JwtUtils.extractToken(request);
+
+        if (token != null && JwtUtils.validateToken(token))
+            return  ResponseEntity.ok(service.authenticate(token));
+         else
+             throw new KhoodiUnAuthroizedException("Invalid or missing token");
 
 
-
-    @GetMapping
-    public  ResponseEntity<String> authenticate(){
-       return ResponseEntity.ok("tested");
     }
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(

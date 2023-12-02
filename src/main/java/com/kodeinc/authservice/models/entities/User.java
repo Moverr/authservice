@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Muyinda Rogers
@@ -45,13 +46,15 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
 
+        Set<GrantedAuthority> authorities = new HashSet<>(roles.stream().map(x -> new SimpleGrantedAuthority(x.getName())).toList());
         // Convert roles to GrantedAuthority
-        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+      //  roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        roles.forEach(role->role.getPermissions().forEach(permission -> {
+            authorities.add(new SimpleGrantedAuthority(permission.getName()));
 
-        // You can add permissions here if needed
-        // authorities.add(new SimpleGrantedAuthority("ROLE_USER")); // Example permission
+        }));
+
 
         return authorities;
     }

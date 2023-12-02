@@ -4,6 +4,7 @@ import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,7 @@ public class JwtUtils {
             return extractClaim(token, Claims::getSubject);
         }
         catch (Exception er){
+            System.out.println(er.getMessage());
             throw new KhoodiUnAuthroizedException(Constants.INVALID_TOKEN);
         }
 
@@ -95,7 +97,26 @@ public class JwtUtils {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 
+    public static String extractToken(HttpServletRequest request) {
+        // Extract the token from the Authorization header
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7); // "Bearer " length
+        }
+        return null;
+    }
 
+
+    public static Boolean validateToken(String token) {
+
+        try {
+            Jws<Claims> claimsJws =   Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     public static Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

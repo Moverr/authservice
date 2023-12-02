@@ -20,4 +20,14 @@ public class ErrorResponseDTO {
 //    private String stackTrace;
 //    private Object data;
 
+
+    @Override
+    public String toString() {
+        return "{" +
+                "timestamp=" + timestamp +
+                ", code=" + code +
+                ", status='" + status + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

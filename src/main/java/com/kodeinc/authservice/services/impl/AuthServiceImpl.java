@@ -1,11 +1,11 @@
 package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.configs.security.JwtUtils;
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.RoleService;
@@ -35,6 +35,14 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RoleService roleService;
 
+    public AuthResponse authenticate(String  tokenString) throws  KhoodiUnAuthroizedException{
+        final String userName = JwtUtils.extractUsername(tokenString.trim());
+        final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+        if (userDetails == null) {
+            throw new KhoodiUnAuthroizedException("Invalid username or password");
+        }
+        return populate(userDetails);
+    }
 
     @Override
     public AuthResponse authenticate(LoginRequest request) {
@@ -46,12 +54,11 @@ public class AuthServiceImpl implements AuthService {
         return populate(userDetails);
     }
 
-    private Authentication validateAuthentication(LoginRequest request) {
+    private void validateAuthentication(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (!authentication.isAuthenticated())
             throw new KhoodiUnAuthroizedException("Un Authorized Access");
 
-        return authentication;
     }
 
     private AuthResponse populate(CustomUserDetails user) {

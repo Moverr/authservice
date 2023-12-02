@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.controllers;
 
+import com.kodeinc.authservice.configs.security.JwtUtils;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
@@ -27,8 +28,12 @@ public class ProjectsController {
     ProjectServiceImpl service;
 
     @GetMapping("/test")
-    public String test(){
-        return  "testing";
+    public String test(@RequestHeader("Authorization") String authorizationHeader){
+
+        //todo: get
+        String username =  JwtUtils.getUsernameFromToken(authorizationHeader);
+
+        return  authorizationHeader;
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)

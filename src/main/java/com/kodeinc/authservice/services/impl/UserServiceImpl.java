@@ -1,8 +1,8 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.dtos.requests.UserRequest;
-import com.kodeinc.authservice.dtos.responses.UserResponse;
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.models.dtos.requests.UserRequest;
+import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.User;

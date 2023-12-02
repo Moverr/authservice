@@ -2,6 +2,7 @@ package com.kodeinc.authservice.configs.security;
 
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
+import com.kodeinc.authservice.models.dtos.responses.ErrorResponseDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +14,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Date;
 
 import static com.kodeinc.authservice.helpers.Constants.INVALID_TOKEN;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -62,12 +67,23 @@ public class JwtAthFilter extends OncePerRequestFilter {
 
 
                 if (er instanceof KhoodiUnAuthroizedException){
+                    ErrorResponseDTO errorResponse =   ErrorResponseDTO.builder()
+                            .code(400)
+                            .timestamp(Timestamp.from(Instant.now()))
+                            .message(Constants.INVALID_TOKEN)
+                            .build();
+
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.getWriter().write(Constants.INVALID_TOKEN);
+                    response.getWriter().write(errorResponse.toString());
                 }else {
 
+                     ErrorResponseDTO errorResponse =   ErrorResponseDTO.builder()
+                            .code(400)
+                             .timestamp(Timestamp.from(Instant.now()))
+                            .message(Constants.INTERNAL_SERVER_ERROR)
+                            .build();
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    response.getWriter().write(Constants.INTERNAL_SERVER_ERROR);
+                    response.getWriter().write(errorResponse.toString());
                 }
 
         }
