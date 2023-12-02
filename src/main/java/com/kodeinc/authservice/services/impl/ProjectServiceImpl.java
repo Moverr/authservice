@@ -9,6 +9,8 @@ import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.repositories.ProjectRepository;
 import com.kodeinc.authservice.services.BasicService;
+import com.kodeinc.authservice.services.ProjectService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,16 +26,23 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectResponseDTO, Project>{
+public class ProjectServiceImpl implements ProjectService {
+
+    private String permission = "PROJECTS";
+
 
     @Autowired
     private ProjectRepository repository;
 
     @Transactional
     @Override
-    public ProjectResponseDTO create(ProjectRequest request) throws CustomBadRequestException {
+    public ProjectResponseDTO create(HttpServletRequest httpServletRequest,ProjectRequest request) throws CustomBadRequestException {
         log.info("ProjectServiceImpl   create method");
-       List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
+
+        //todo: validate user access
+
+
+        List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
        if(!projectList.isEmpty()){
            throw new CustomBadRequestException("Project Already Exists");
        }
@@ -44,7 +53,7 @@ public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectR
 
     @Transactional
     @Override
-    public ProjectResponseDTO update(long id, ProjectRequest request) {
+    public ProjectResponseDTO update(HttpServletRequest httpServletRequest,long id, ProjectRequest request) {
        Optional<Project> optionalProject =  repository.findById(id);
        if(optionalProject.isEmpty()){
            throw new CustomNotFoundException("Record does not exist");
@@ -64,7 +73,7 @@ public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectR
     }
 
     @Override
-    public ProjectResponseDTO getByID(long id){
+    public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest,long id){
         Optional<Project> optionalProject =  repository.findById(id);
         if(optionalProject.isEmpty()){
             throw new CustomNotFoundException("Record does not exist");
@@ -73,7 +82,7 @@ public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectR
     }
 
     @Override
-    public CustomPage<ProjectResponseDTO> list(SearchRequest query) {
+    public CustomPage<ProjectResponseDTO> list(HttpServletRequest httpServletRequest,SearchRequest query) {
         Sort sort =   switch (query.getSortBy()){
             case "code" -> Sort.by("code") ;
            default -> Sort.by("name");
@@ -100,7 +109,7 @@ public class ProjectServiceImpl implements BasicService<ProjectRequest, ProjectR
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(HttpServletRequest httpServletRequest,long id) {
         Optional<Project> optionalProject =  repository.findById(id);
         if(optionalProject.isEmpty()){
             throw new CustomNotFoundException("Record does not exist");

@@ -1,29 +1,26 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * @author Muyinda Rogers
- * @Date 2023-09-13
+ * @Date 2023-09-10
  * @Email moverr@gmail.com
  */
 
 @Getter
 @Setter
-@Builder
-@JsonSerialize
 public class AuthResponse {
-    private String username;
-    private AuthTokenResponse authToken;
-    private RefreshTokenResponse refreshToken;
-    private boolean accountLocked;
-    private boolean credentialsNonExpired;
-    private boolean enabled;
-
-    //todo: profile information missing :: probaly not important at the moment ..
-
-
+    @JsonProperty("is_successful")
+    private boolean success;
+    @JsonProperty("message")
+    private String message;
+    @JsonProperty("user")
+    private UserResponse user;
+    @JsonProperty("auth_token")
+    private String authToken;
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 }

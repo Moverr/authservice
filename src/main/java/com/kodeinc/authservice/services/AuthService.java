@@ -1,7 +1,8 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author Muyinda Rogers
@@ -10,5 +11,7 @@ import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
  */
 public interface AuthService {
 
+    AuthResponse refresh(HttpServletRequest request);
+      AuthResponse authenticate(HttpServletRequest request);
      AuthResponse authenticate(LoginRequest request);
 }

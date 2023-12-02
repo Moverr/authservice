@@ -1,12 +1,16 @@
 package com.kodeinc.authservice.controllers;
 
-import com.kodeinc.authservice.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.services.impl.AuthServiceImpl;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
+import com.kodeinc.authservice.services.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Muyinda Rogers
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @Email moverr@gmail.com
  */
 @RestController
-@RequestMapping("api/v1/auth")
+@RequestMapping("v1/auth")
 
 public class AuthenticationController extends BaseController<AuthResponse>{
 
@@ -25,15 +29,25 @@ public class AuthenticationController extends BaseController<AuthResponse>{
      */
 
 
+
     @Autowired
-    private  AuthServiceImpl service;
+    private AuthService service;
 
+    /*
+    *
+      Validate request token and respond with full details of the principal
+     */
 
-
-    @GetMapping
-    public  ResponseEntity<String> authenticate(){
-       return ResponseEntity.ok("tested");
+    @PostMapping("/validate")
+    public  ResponseEntity<AuthResponse>  validateToken(final HttpServletRequest request){
+            return  ResponseEntity.ok(service.authenticate(request));
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(final HttpServletRequest request){
+        throw  new RuntimeException("Not yet implemented");
+    }
+
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(
@@ -41,4 +55,6 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     ) {
         return  ResponseEntity.ok(service.authenticate(loginRequest));
     }
+
+
 }

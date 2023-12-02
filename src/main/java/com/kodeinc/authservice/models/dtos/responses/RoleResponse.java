@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.dtos.responses;
+package com.kodeinc.authservice.models.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 public class RoleResponse {
     @JsonProperty("name")
-    private String role;
+    private String name;
     @JsonProperty("permissions")
-    private List<String> permissions;
+    private List<PermissionResponse> permissions;
 }

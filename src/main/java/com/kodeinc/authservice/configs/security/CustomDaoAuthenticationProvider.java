@@ -1,4 +1,4 @@
-package com.kodeinc.authservice.configs;
+package com.kodeinc.authservice.configs.security;
 
 import com.kodeinc.authservice.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,22 +4,22 @@ import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
 
 @Getter
 @Setter
 @Entity
 @Table(name="permissions")
-public class Permission extends BaseEntity{
+public class Permission extends BaseEntity  {
 
 
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "create")
-    private String create;
+    @Enumerated(EnumType.STRING)
+    private PermissionLevelEnum create;
 
     @Column(name = "read")
     @Enumerated(EnumType.STRING)
@@ -49,5 +49,6 @@ public class Permission extends BaseEntity{
 
     @Column(name = "writable_fields",columnDefinition = "json")
     private String writableFields;
+
 
 }

@@ -1,10 +1,16 @@
 package com.kodeinc.authservice.models.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Muyinda Rogers
@@ -12,10 +18,10 @@ import lombok.Setter;
  * @Email moverr@gmail.com
  */
 @Entity
-@Table(name = "roles")
+@Table(name = "users")
 @Getter
 @Setter
-public class User extends BaseEntity{
+public class User extends BaseEntity implements UserDetails {
     @Column(name = "username")
     private String username;
 
@@ -23,14 +29,50 @@ public class User extends BaseEntity{
     private String password;
 
 
-    @Column(name = "firstname")
-    private String firstname;
-
-
-    @Column(name = "lastname")
-    private String lastname;
-
     @Column(name = "enabled")
     private boolean enabled;
+
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        Set<GrantedAuthority> authorities = new HashSet<>(roles.stream().map(x -> new SimpleGrantedAuthority(x.getName())).toList());
+        // Convert roles to GrantedAuthority
+      //  roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        roles.forEach(role->role.getPermissions().forEach(permission -> {
+            authorities.add(new SimpleGrantedAuthority(permission.getName()));
+
+        }));
+
+
+        return authorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
 
 }
