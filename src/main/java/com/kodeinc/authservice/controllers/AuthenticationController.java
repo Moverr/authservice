@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @Email moverr@gmail.com
  */
 @RestController
-@RequestMapping("api/v1/auth")
+@RequestMapping("v1/auth")
 
 public class AuthenticationController extends BaseController<AuthResponse>{
 
@@ -41,6 +41,12 @@ public class AuthenticationController extends BaseController<AuthResponse>{
             return  ResponseEntity.ok(service.authenticate(request));
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(final HttpServletRequest request){
+        throw  new RuntimeException("Not yet implemented");
+    }
+
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody LoginRequest loginRequest
@@ -49,6 +55,4 @@ public class AuthenticationController extends BaseController<AuthResponse>{
     }
 
 
-    //todo: we can validate
-    //todo: we can
 }

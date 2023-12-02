@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/projects")
+@RequestMapping("/v1/projects")
 @Validated
 public class ProjectsController {
 

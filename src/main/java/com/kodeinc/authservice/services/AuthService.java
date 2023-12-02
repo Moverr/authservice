@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public interface AuthService {
 
+    AuthResponse refresh(HttpServletRequest request);
       AuthResponse authenticate(HttpServletRequest request);
      AuthResponse authenticate(LoginRequest request);
 }
