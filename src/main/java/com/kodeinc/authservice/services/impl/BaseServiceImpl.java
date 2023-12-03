@@ -1,13 +1,11 @@
 package com.kodeinc.authservice.services.impl;
 
-import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
-import com.kodeinc.authservice.models.dtos.responses.RoleResponse;
-import com.kodeinc.authservice.models.dtos.responses.UserResponse;
+import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.BaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,7 +25,9 @@ public class BaseServiceImpl implements BaseService {
         return service.authenticate(request);
     }
 
-    public PermissionResponse authorizeRequest(HttpServletRequest request, List<RoleResponse> expectedRoles) {
+    public PermissionResponse authorizeRequestRoles(HttpServletRequest request, List<RoleResponse> expectedRoles) {
+
+        if(expectedRoles == null) return null;
 
         AuthResponse response = validateAuth(request);
         UserResponse user = response.getUser();
@@ -51,6 +51,42 @@ public class BaseServiceImpl implements BaseService {
 
         return null;
     }
+
+
+    public AuthorizeRequestResponse authorizeRequestPermissions(HttpServletRequest request, List<PermissionResponse> expectedPermissions) {
+
+        if(expectedPermissions == null) return null;
+
+        AuthResponse response = validateAuth(request);
+        UserResponse user = response.getUser();
+
+        for (RoleResponse roleResponse : user.getRoles()) {
+
+
+                    for (PermissionResponse permissionResponse : roleResponse.getPermissions()) {
+                        for (PermissionResponse expectedPermision : expectedPermissions) {
+                            //todo: find if there is a user permission pre set to the role.
+                            if (expectedPermision.getName().equalsIgnoreCase(permissionResponse.getName())) {
+                                /*
+                                Return user permission. further checking would be
+                                on the level of permission ..
+                                 */
+                                return  AuthorizeRequestResponse.builder()
+                                        .auth(response)
+                                        .permission(permissionResponse).build()
+                                ;
+
+                            }
+                        }
+                    }
+
+
+        }
+
+
+        return null;
+    }
+
 
 
 }

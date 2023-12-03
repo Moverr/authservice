@@ -14,6 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 public class UserResponse {
+    @JsonProperty("user_id")
+    private long userId;
+
     @JsonProperty("username")
     private String username;
 

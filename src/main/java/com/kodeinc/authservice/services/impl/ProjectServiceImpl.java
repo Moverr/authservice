@@ -2,12 +2,14 @@ package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
-import com.kodeinc.authservice.models.dtos.responses.CustomPage;
-import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
+import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.models.entities.Project;
+import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.ProjectRepository;
+import com.kodeinc.authservice.services.BaseService;
 import com.kodeinc.authservice.services.BasicService;
 import com.kodeinc.authservice.services.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,13 +22,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ProjectServiceImpl implements ProjectService {
+public class ProjectServiceImpl extends BaseServiceImpl implements ProjectService {
 
     private String permission = "PROJECTS";
 
@@ -36,71 +39,101 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public ProjectResponseDTO create(HttpServletRequest httpServletRequest,ProjectRequest request) throws CustomBadRequestException {
+    public ProjectResponseDTO create(HttpServletRequest httpServletRequest, ProjectRequest request) throws CustomBadRequestException {
         log.info("ProjectServiceImpl   create method");
 
+
         //todo: validate user access
+        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
 
-        //one should have create product permission
-        //and the level should not be none..
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+            List<Project> projectList = repository.findAllByNameAndCode(request.getName(), request.getCode());
+            if (!projectList.isEmpty()) {
+                throw new CustomBadRequestException("Project Already Exists");
+            }
+            return populate(repository.save(populate(request)));
+        } else {
+            throw new KhoodiUnAuthroizedException("You dont have permission to create projects");
+        }
 
-
-        List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
-       if(!projectList.isEmpty()){
-           throw new CustomBadRequestException("Project Already Exists");
-       }
-        return populate(repository.save(populate(request)));
 
     }
 
 
     @Transactional
     @Override
-    public ProjectResponseDTO update(HttpServletRequest httpServletRequest,long id, ProjectRequest request) {
-       Optional<Project> optionalProject =  repository.findById(id);
-       if(optionalProject.isEmpty()){
-           throw new CustomNotFoundException("Record does not exist");
-       }
-
-
-        List<Project> projectList =  repository.findByNameAndCodeAndNotID(id,request.getName(), request.getCode());
-        if(!projectList.isEmpty()){
-            throw new CustomBadRequestException("Project Already Exists");
-        }
-
-
-       Project project = optionalProject.get();
-       Project newRecordUpdate  = populate(request);
-       newRecordUpdate.setId(project.getId());
-        return this.populate(repository.save(newRecordUpdate));
-    }
-
-    @Override
-    public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest,long id){
-        Optional<Project> optionalProject =  repository.findById(id);
-        if(optionalProject.isEmpty()){
+    public ProjectResponseDTO update(HttpServletRequest httpServletRequest, long id, ProjectRequest request) {
+        Optional<Project> optionalProject = repository.findById(id);
+        if (optionalProject.isEmpty()) {
             throw new CustomNotFoundException("Record does not exist");
         }
-        return  populate(optionalProject.get());
+
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+
+
+            List<Project> projectList = repository.findByNameAndCodeAndNotID(id, request.getName(), request.getCode());
+            if (!projectList.isEmpty()) {
+                throw new CustomBadRequestException("Project Already Exists");
+            }
+            Project project = optionalProject.get();
+
+            switch (authResponse.getPermission().getUpdate()){
+                case MINE -> {
+                    if(project.getCreatedBy() != authResponse.getAuth().getUser().getUserId()){
+                        throw new KhoodiUnAuthroizedException("You dont have permission to update projects");
+                    }
+                }
+                case NONE -> {
+                    throw new KhoodiUnAuthroizedException("You dont have permission to update projects");
+                }
+                case ROLE -> {
+                //todo: find if the user exists in the same role.
+                }
+                case FULL -> {
+                    //todo: nothing to do here for now.
+                }
+
+            }
+
+            Project newRecordUpdate = populate(request);
+            newRecordUpdate.setId(project.getId());
+            return this.populate(repository.save(newRecordUpdate));
+
+        }
+        else {
+            throw new KhoodiUnAuthroizedException("You dont have permission to update projects");
+        }
+
     }
 
     @Override
-    public CustomPage<ProjectResponseDTO> list(HttpServletRequest httpServletRequest,SearchRequest query) {
-        Sort sort =   switch (query.getSortBy()){
-            case "code" -> Sort.by("code") ;
-           default -> Sort.by("name");
+    public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
+        Optional<Project> optionalProject = repository.findById(id);
+        if (optionalProject.isEmpty()) {
+            throw new CustomNotFoundException("Record does not exist");
+        }
+        return populate(optionalProject.get());
+    }
+
+    @Override
+    public CustomPage<ProjectResponseDTO> list(HttpServletRequest httpServletRequest, SearchRequest query) {
+        Sort sort = switch (query.getSortBy()) {
+            case "code" -> Sort.by("code");
+            default -> Sort.by("name");
         };
 
-        sort = switch (query.getSortType()){
-          case "asc" -> sort.ascending();
-          default -> sort.descending();
+        sort = switch (query.getSortType()) {
+            case "asc" -> sort.ascending();
+            default -> sort.descending();
         };
 
 
-        Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(),sort);
-         Page<Project>  projects  = repository.findAll(pageable);
+        Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
+        Page<Project> projects = repository.findAll(pageable);
 
-        List<ProjectResponseDTO> responses  =  projects.stream().map(this::populate).collect(Collectors.toList());
+        List<ProjectResponseDTO> responses = projects.stream().map(this::populate).collect(Collectors.toList());
 
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
         customResponse.setData(responses);
@@ -108,40 +141,57 @@ public class ProjectServiceImpl implements ProjectService {
         customResponse.setPageSize(projects.getSize());
         customResponse.setPageNumber(projects.getNumber());
 
-         return  customResponse;
+        return customResponse;
     }
 
     @Override
-    public void delete(HttpServletRequest httpServletRequest,long id) {
-        Optional<Project> optionalProject =  repository.findById(id);
-        if(optionalProject.isEmpty()){
+    public void delete(HttpServletRequest httpServletRequest, long id) {
+        Optional<Project> optionalProject = repository.findById(id);
+        if (optionalProject.isEmpty()) {
             throw new CustomNotFoundException("Record does not exist");
         }
         Project project = optionalProject.get();
         //permanent delete
-       repository.delete(project);
+        repository.delete(project);
     }
 
+
+    private static List<PermissionResponse> getPermission() {
+
+
+        List<PermissionResponse> expectedPermissions = new ArrayList<>();
+        PermissionResponse permissionResponse = new PermissionResponse();
+        permissionResponse.setName("ALL_FUNCTIONS");
+        expectedPermissions.add(permissionResponse);
+        permissionResponse = new PermissionResponse();
+        //todo: if some one has permission projects, and also de
+        permissionResponse.setName("PROJECTS");
+        expectedPermissions.add(permissionResponse);
+        return expectedPermissions;
+
+
+    }
+
+
     private Project populate(ProjectRequest request) {
-        Project entity  = new Project();
+        Project entity = new Project();
         entity.setCode(request.getCode());
         entity.setName(request.getName());
         entity.setCallbackUrl(request.getCallbackUrl());
-        return  entity;
+        return entity;
     }
 
 
     private ProjectResponseDTO populate(Project entity) {
-     return ProjectResponseDTO
+        return ProjectResponseDTO
                 .builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .code(entity.getCode())
                 .callbackUrl(entity.getCallbackUrl())
-                .build()  ;
+                .build();
 
     }
-
 
 
 }
