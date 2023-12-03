@@ -41,6 +41,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         //todo: validate user access
 
+        //one should have create product permission
+        //and the level should not be none..
+
 
         List<Project> projectList =  repository.findAllByNameAndCode(request.getName(), request.getCode());
        if(!projectList.isEmpty()){
