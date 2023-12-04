@@ -39,7 +39,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     public ProjectResponseDTO create(HttpServletRequest httpServletRequest, ProjectRequest request) throws CustomBadRequestException {
         log.info("ProjectServiceImpl   create method");
 
-
         //todo: validate user access
         AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
 
@@ -108,7 +107,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     @Override
     public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
             Optional<Project> optionalProject = repository.findById(id);
             if (optionalProject.isEmpty()) {
                 throw new CustomNotFoundException("Record does not exist");
@@ -156,7 +155,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             default -> sort.descending();
         };
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
 
             Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
             Page<Project> projects = null;
@@ -192,9 +191,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     }
 
-    private static CustomPage<ProjectResponseDTO> getProjectResponseDTOCustomPage(Page<Project> projects, List<?> responses) {
+    private static CustomPage<ProjectResponseDTO> getProjectResponseDTOCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
-//        customResponse.setData(responses);
+        customResponse.setData(responses);
         customResponse.setPageNumber(projects.getNumber());
         customResponse.setPageSize(projects.getSize());
         customResponse.setPageNumber(projects.getNumber());
