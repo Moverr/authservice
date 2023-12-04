@@ -9,8 +9,6 @@ import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.ProjectRepository;
-import com.kodeinc.authservice.services.BaseService;
-import com.kodeinc.authservice.services.BasicService;
 import com.kodeinc.authservice.services.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +43,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         //todo: validate user access
         AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
 
-        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
             List<Project> projectList = repository.findAllByNameAndCode(request.getName(), request.getCode());
             if (!projectList.isEmpty()) {
                 throw new CustomBadRequestException("Project Already Exists");
@@ -69,7 +67,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
 
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
 
 
             List<Project> projectList = repository.findByNameAndCodeAndNotID(id, request.getName(), request.getCode());
@@ -110,7 +108,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     @Override
     public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
             Optional<Project> optionalProject = repository.findById(id);
             if (optionalProject.isEmpty()) {
                 throw new CustomNotFoundException("Record does not exist");
@@ -158,7 +156,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             default -> sort.descending();
         };
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
 
             Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
             Page<Project> projects = null;
@@ -221,11 +219,11 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
         List<PermissionResponse> expectedPermissions = new ArrayList<>();
         PermissionResponse permissionResponse = new PermissionResponse();
-        permissionResponse.setName("ALL_FUNCTIONS");
+        permissionResponse.setResource("ALL_FUNCTIONS");
         expectedPermissions.add(permissionResponse);
         permissionResponse = new PermissionResponse();
         //todo: if some one has permission projects, and also de
-        permissionResponse.setName("PROJECTS");
+        permissionResponse.setResource("PROJECTS");
         expectedPermissions.add(permissionResponse);
         return expectedPermissions;
 

@@ -5,7 +5,6 @@ import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.BaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class BaseServiceImpl implements BaseService {
                     for (PermissionResponse permissionResponse : roleResponse.getPermissions()) {
                         for (PermissionResponse expectedPermision : expectedRole.getPermissions()) {
                             //todo: find if there is a user permission pre set to the role.
-                            if (expectedPermision.getName().equalsIgnoreCase(permissionResponse.getName())) {
+                            if (expectedPermision.getResource().equalsIgnoreCase(permissionResponse.getResource())) {
                                  return permissionResponse;
                             }
                         }
@@ -66,7 +65,7 @@ public class BaseServiceImpl implements BaseService {
                     for (PermissionResponse permissionResponse : roleResponse.getPermissions()) {
                         for (PermissionResponse expectedPermision : expectedPermissions) {
                             //todo: find if there is a user permission pre set to the role.
-                            if (expectedPermision.getName().equalsIgnoreCase(permissionResponse.getName())) {
+                            if (expectedPermision.getResource().equalsIgnoreCase(permissionResponse.getResource())) {
                                 /*
                                 Return user permission. further checking would be
                                 on the level of permission ..

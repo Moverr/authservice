@@ -68,12 +68,13 @@ import java.util.stream.Collectors;
     public PermissionResponse populate(Permission entity){
 
         PermissionResponse permissionResponse = new PermissionResponse();
-        permissionResponse.setName(entity.getName());
+        permissionResponse.setResource(entity.getName());
         permissionResponse.setRead(entity.getRead());
         permissionResponse.setCreate(entity.getCreate());
         permissionResponse.setUpdate(entity.getUpdate());
         permissionResponse.setDelete(entity.getDelete());
-        permissionResponse.setResource(entity.getResource());
+        if(entity.getResource() != null)
+            permissionResponse.setResource(entity.getResource().getName());
 
 
         return  permissionResponse;

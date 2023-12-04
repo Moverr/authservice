@@ -17,8 +17,8 @@ import lombok.Setter;
 @Setter
 public class PermissionResponse {
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("resource")
+    private String resource;
 
     @JsonProperty( "create")
     private PermissionLevelEnum create;
@@ -42,8 +42,7 @@ public class PermissionResponse {
     @Enumerated(EnumType.STRING)
     private PermissionLevelEnum comment;
 
-    @JsonProperty("resource")
-    private String resource;
+
 
 
 }
