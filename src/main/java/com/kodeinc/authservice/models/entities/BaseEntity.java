@@ -59,8 +59,7 @@ public class BaseEntity implements Serializable {
 
     @JsonProperty("status")
     @Column(name = "status")
-   // @Enumerated(EnumType.STRING)
-    private String status;
-
+    @Enumerated(EnumType.STRING)
+    private GeneralStatusEnum status;
 
 }
