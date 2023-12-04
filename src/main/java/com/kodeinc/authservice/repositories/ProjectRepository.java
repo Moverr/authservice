@@ -1,6 +1,8 @@
 package com.kodeinc.authservice.repositories;
 
 import com.kodeinc.authservice.models.entities.Project;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,5 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     @Query("SELECT pr from Project pr where  pr.name like :name and pr.code like :code and pr.id <> :id")
     List<Project> findByNameAndCodeAndNotID(@Param("id") Long id, @Param("name") String name, @Param("code") String code);
 
+    Page<Project> findAllByCreatedBy(long createdBy, Pageable pageable);
 }

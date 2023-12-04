@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl extends BaseServiceImpl implements ProjectService {
 
-    private String permission = "PROJECTS";
 
 
     @Autowired
@@ -110,11 +109,41 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     @Override
     public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
-        Optional<Project> optionalProject = repository.findById(id);
-        if (optionalProject.isEmpty()) {
-            throw new CustomNotFoundException("Record does not exist");
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+            Optional<Project> optionalProject = repository.findById(id);
+            if (optionalProject.isEmpty()) {
+                throw new CustomNotFoundException("Record does not exist");
+            }
+
+            switch (authResponse.getPermission().getUpdate()){
+                case MINE -> {
+                    if(optionalProject.get().getCreatedBy() != authResponse.getAuth().getUser().getUserId()){
+                        throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+                    }
+                }
+                case NONE ->
+                    throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+
+                case ROLE -> {
+                    //todo: find if the user exists in the same role.
+                }
+                case FULL -> {
+                    //todo: nothing to do here for now.
+                }
+
+            }
+
+
+            return populate(optionalProject.get());
+
         }
-        return populate(optionalProject.get());
+        else
+            throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+
+
+
+
     }
 
     @Override
@@ -128,20 +157,45 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             case "asc" -> sort.ascending();
             default -> sort.descending();
         };
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+
+            Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
+            Page<Project> projects = null;
+            //= repository.findAll(pageable);
+
+            switch (authResponse.getPermission().getUpdate()){
+                case MINE -> {
+                     projects = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(),pageable);
+
+                }
+                case NONE ->
+                        throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+
+                case ROLE -> {
+                    //todo: find if the user exists in the same role.
+                }
+                case FULL ->
+                    projects = repository.findAll(pageable);
 
 
-        Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
-        Page<Project> projects = repository.findAll(pageable);
+            }
 
-        List<ProjectResponseDTO> responses = projects.stream().map(this::populate).collect(Collectors.toList());
 
-        CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
-        customResponse.setData(responses);
-        customResponse.setPageNumber(projects.getNumber());
-        customResponse.setPageSize(projects.getSize());
-        customResponse.setPageNumber(projects.getNumber());
+            List<ProjectResponseDTO> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
 
-        return customResponse;
+            CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
+            customResponse.setData(responses);
+            customResponse.setPageNumber(projects.getNumber());
+            customResponse.setPageSize(projects.getSize());
+            customResponse.setPageNumber(projects.getNumber());
+
+            return customResponse;
+
+        }else
+            throw new KhoodiUnAuthroizedException("You dont have permission to view");
+
+
     }
 
     @Override
