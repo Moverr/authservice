@@ -40,8 +40,7 @@ public class Permission extends BaseEntity  {
     @Enumerated(EnumType.STRING)
     private PermissionLevelEnum comment;
 
-    @Column(name = "resource")
-    private String resource;
+
 
     @Column(name = "readable_fields",columnDefinition = "json")
     private String readableFields;
@@ -50,5 +49,8 @@ public class Permission extends BaseEntity  {
     @Column(name = "writable_fields",columnDefinition = "json")
     private String writableFields;
 
+    @ManyToOne
+    @JoinColumn(name = "resource_id")
+    private ProjectResource resource;
 
 }
