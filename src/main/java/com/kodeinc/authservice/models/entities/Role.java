@@ -30,7 +30,7 @@ public class Role  extends BaseEntity  {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "role_permission",
+            name = "role_permission_resource",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
