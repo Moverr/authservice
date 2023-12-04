@@ -22,11 +22,10 @@ public class ProjectResource  extends BaseEntity{
     private Project project;
 
     @Column(name = "resource")
-    private String resource;
+    private String name;
 
     @Column(name = "table_structure", columnDefinition = "json")
     private String tableStructure;
-
 
 
 }
