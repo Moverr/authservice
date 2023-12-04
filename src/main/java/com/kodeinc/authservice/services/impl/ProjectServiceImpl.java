@@ -184,12 +184,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
             List<ProjectResponseDTO> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
 
-            CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
-            customResponse.setData(responses);
-            customResponse.setPageNumber(projects.getNumber());
-            customResponse.setPageSize(projects.getSize());
-            customResponse.setPageNumber(projects.getNumber());
-            customResponse.setTotalElements(projects.getTotalElements());
+            CustomPage<ProjectResponseDTO> customResponse = getProjectResponseDTOCustomPage(projects, responses);
 
             return customResponse;
 
@@ -197,6 +192,16 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             throw new KhoodiUnAuthroizedException("You dont have permission to view");
 
 
+    }
+
+    private static CustomPage<ProjectResponseDTO> getProjectResponseDTOCustomPage(Page<Project> projects, List<?> responses) {
+        CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
+//        customResponse.setData(responses);
+        customResponse.setPageNumber(projects.getNumber());
+        customResponse.setPageSize(projects.getSize());
+        customResponse.setPageNumber(projects.getNumber());
+        customResponse.setTotalElements(projects.getTotalElements());
+        return customResponse;
     }
 
     @Override
