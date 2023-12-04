@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -19,7 +21,6 @@ public class ProjectResponseDTO {
     @JsonProperty("callback_url")
     private String callbackUrl;
 
-//    @JsonProperty("roles")
-//    private List<RoleResponseDTO> roles;
+
 
 }

@@ -165,10 +165,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             //= repository.findAll(pageable);
 
             switch (authResponse.getPermission().getUpdate()){
-                case MINE -> {
+                case MINE ->
                      projects = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(),pageable);
 
-                }
+
                 case NONE ->
                         throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
 
@@ -189,6 +189,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             customResponse.setPageNumber(projects.getNumber());
             customResponse.setPageSize(projects.getSize());
             customResponse.setPageNumber(projects.getNumber());
+            customResponse.setTotalElements(projects.getTotalElements());
 
             return customResponse;
 
