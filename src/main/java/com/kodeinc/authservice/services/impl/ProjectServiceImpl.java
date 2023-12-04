@@ -114,7 +114,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                 throw new CustomNotFoundException("Record does not exist");
             }
 
-            switch (authResponse.getPermission().getUpdate()){
+            switch (authResponse.getPermission().getRead()){
                 case MINE -> {
                     if(optionalProject.get().getCreatedBy() != authResponse.getAuth().getUser().getUserId()){
                         throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
@@ -162,7 +162,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             Page<Project> projects = null;
             //= repository.findAll(pageable);
 
-            switch (authResponse.getPermission().getUpdate()){
+            switch (authResponse.getPermission().getRead()){
                 case MINE ->
                      projects = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(),pageable);
 
