@@ -158,8 +158,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
 
             Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
-            Page<Project> projects = null;
-            //= repository.findAll(pageable);
+            Page<Project> projects;
 
             switch (authResponse.getPermission().getRead()){
                 case MINE ->
@@ -169,11 +168,14 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                 case NONE ->
                         throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
 
-                case ROLE -> {
-                    //todo: find if the user exists in the same role.
-                }
+                case ROLE ->
+                    throw new RuntimeException("Not yet implemented role level");
+
+
                 case FULL ->
                     projects = repository.findAll(pageable);
+                default ->
+                        throw new KhoodiUnAuthroizedException("You are not authorized");
 
 
             }
@@ -181,9 +183,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
             List<ProjectResponseDTO> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
 
-            CustomPage<ProjectResponseDTO> customResponse = getProjectResponseDTOCustomPage(projects, responses);
-
-            return customResponse;
+            return getCustomPage(projects, responses);
 
         }else
             throw new KhoodiUnAuthroizedException("You dont have permission to view");
@@ -191,7 +191,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     }
 
-    private static CustomPage<ProjectResponseDTO> getProjectResponseDTOCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
+    private static CustomPage<ProjectResponseDTO> getCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
         customResponse.setData(responses);
         customResponse.setPageNumber(projects.getNumber());
@@ -215,7 +215,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     private static List<PermissionResponse> getPermission() {
 
-
         List<PermissionResponse> expectedPermissions = new ArrayList<>();
         PermissionResponse permissionResponse = new PermissionResponse();
         permissionResponse.setResource("ALL_FUNCTIONS");
@@ -225,7 +224,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         permissionResponse.setResource("PROJECTS");
         expectedPermissions.add(permissionResponse);
         return expectedPermissions;
-
 
     }
 
