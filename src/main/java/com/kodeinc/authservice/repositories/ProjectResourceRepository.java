@@ -1,6 +1,5 @@
 package com.kodeinc.authservice.repositories;
 
-import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.models.entities.ProjectResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
