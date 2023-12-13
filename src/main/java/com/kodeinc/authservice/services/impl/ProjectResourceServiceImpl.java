@@ -1,6 +1,7 @@
 package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.ProjectResourceRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
@@ -18,10 +19,15 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Muyinda Rogers
@@ -70,7 +76,40 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
      */
     @Override
     public ProjectResourceResponse update(HttpServletRequest httpServletRequest, long id, ProjectResourceRequest request) {
-        return null;
+
+        ProjectResource projectResource = repository.findById(id).orElseThrow(()->new CustomNotFoundException("Project Resource not found"));
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+
+
+            switch (authResponse.getPermission().getUpdate()){
+                case MINE -> {
+                    if(projectResource.getCreatedBy() != authResponse.getAuth().getUser().getUserId()){
+                        throw new KhoodiUnAuthroizedException("You dont have permission to update projectResource resources");
+                    }
+                }
+                case NONE -> {
+                    throw new KhoodiUnAuthroizedException("You dont have permission to update projectResource resources");
+                }
+                case ROLE -> {
+                    //todo: find if the user exists in the same role.
+                }
+                case FULL -> {
+                    //todo: nothing to do here for now.
+                }
+
+            }
+
+            ProjectResource newRecordUpdate = populate(projectResource,request);
+
+            return this.populate(repository.save(newRecordUpdate));
+
+        }
+        else {
+            throw new KhoodiUnAuthroizedException("You dont have permission to update projects");
+        }
+
     }
 
     /**
@@ -80,7 +119,39 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
      */
     @Override
     public ProjectResourceResponse getByID(HttpServletRequest httpServletRequest, long id) {
-        return null;
+
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
+            ProjectResource projectResource = repository.findById(id).orElseThrow(()->new CustomNotFoundException("Project Resource not found"));
+
+
+
+            switch (authResponse.getPermission().getRead()){
+                case MINE -> {
+                    if(projectResource.getCreatedBy() != authResponse.getAuth().getUser().getUserId()){
+                        throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+                    }
+                }
+                case NONE ->
+                        throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+
+                case ROLE -> {
+                    //todo: find if the user exists in the same role.
+                }
+                case FULL -> {
+                    //todo: nothing to do here for now.
+                }
+
+            }
+
+
+            return populate(projectResource);
+
+        }
+        else
+            throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+
+
     }
 
     /**
@@ -90,7 +161,58 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
      */
     @Override
     public CustomPage<ProjectResourceResponse> list(HttpServletRequest httpServletRequest, SearchRequest query) {
-        return null;
+
+        Sort sort = switch (query.getSortBy()) {
+            case "code" -> Sort.by("code");
+            default -> Sort.by("name");
+        };
+
+        sort = switch (query.getSortType()) {
+            case "asc" -> sort.ascending();
+            default -> sort.descending();
+        };
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
+
+            Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
+            Page<ProjectResource> projectResources;
+
+            switch (authResponse.getPermission().getRead()){
+                case MINE ->
+                        projectResources = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(),pageable);
+
+
+                case NONE ->
+                        throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
+
+                case ROLE ->
+                        throw new RuntimeException("Not yet implemented role level");
+
+
+                case FULL ->
+                        projectResources = repository.findAll(pageable);
+                default ->
+                        throw new KhoodiUnAuthroizedException("You are not authorized");
+
+            }
+
+            List<ProjectResourceResponse> responses =  projectResources.stream().map(this::populate).collect(Collectors.toList());
+
+            return getCustomPage(projectResources, responses);
+
+        }else
+            throw new KhoodiUnAuthroizedException("You dont have permission to view");
+
+    }
+
+    private static CustomPage<ProjectResourceResponse> getCustomPage(Page<ProjectResource> projectResources, List<ProjectResourceResponse> responses) {
+        CustomPage<ProjectResourceResponse> customResponse = new CustomPage<>();
+        customResponse.setData(responses);
+        customResponse.setPageNumber(projectResources.getNumber());
+        customResponse.setPageSize(projectResources.getSize());
+        customResponse.setPageNumber(projectResources.getNumber());
+        customResponse.setTotalElements(projectResources.getTotalElements());
+        return customResponse;
     }
 
     /**
@@ -102,7 +224,7 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
 
     }
 
-    private static List<PermissionResponse> getPermission() {
+    private static  List<PermissionResponse> getPermission() {
 
         List<PermissionResponse> expectedPermissions = new ArrayList<>();
         PermissionResponse permissionResponse = new PermissionResponse();
@@ -112,9 +234,13 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
         permissionResponse.setResource("PROJECTS_RESOURCES");
         expectedPermissions.add(permissionResponse);
         return expectedPermissions;
-
     }
 
+
+    private ProjectResource populate(ProjectResource entity ,ProjectResourceRequest request){
+        entity.setName(request.getName().isBlank() ? entity.getName():request.getName() );
+        return entity;
+    }
 
     private ProjectResource populate(ProjectResourceRequest request){
         Project project =  projectRepository.getReferenceById(request.getProjectId());
@@ -122,7 +248,6 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
         projectResource.setProject(project);
         projectResource.setName(request.getName());
         return projectResource;
-
     }
 
     private ProjectResourceResponse populate(ProjectResource request){
@@ -131,7 +256,6 @@ public class ProjectResourceServiceImpl  extends BaseServiceImpl implements Proj
                 .id(request.getId())
                 .name(request.getName())
                 .build();
-
     }
 
 

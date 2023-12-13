@@ -47,7 +47,8 @@ dependencies {
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4"
 	implementation "org.springframework.boot:spring-boot-starter-actuator:3.1.0"
 	implementation "io.jsonwebtoken:jjwt-api:0.11.5"
-	runtimeOnly "io.jsonwebtoken:jjwt-impl:0.11.5"
+    implementation 'org.jetbrains:annotations:24.0.0'
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:0.11.5"
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 //	compile group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.10.5'
 //Thanks for using https://jar-download.com
