@@ -40,7 +40,6 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
 
     @Autowired
     private ProjectResourceRepository repository;
-
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -88,9 +87,9 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
                         throw new KhoodiUnAuthroizedException("You dont have permission to update projectResource resources");
                     }
                 }
-                case NONE -> {
+                case NONE ->
                     throw new KhoodiUnAuthroizedException("You dont have permission to update projectResource resources");
-                }
+
                 case ROLE -> {
                     //todo: find if the user exists in the same role.
                 }
@@ -140,12 +139,10 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
 
             }
 
-
             return populate(projectResource);
 
         } else
             throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
-
 
     }
 
@@ -169,6 +166,7 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
             case "asc" -> sort.ascending();
             default -> sort.descending();
         };
+
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead() != (PermissionLevelEnum.NONE))) {
 
@@ -215,7 +213,6 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
         }else{
             log.info("UnAuthorized Access {} ",httpServletRequest.toString());
             throw new KhoodiUnAuthroizedException("You dont have permission delete");
-
         }
 
     }
@@ -231,7 +228,6 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
     }
 
     private static List<PermissionResponse> getPermission() {
-
         List<PermissionResponse> expectedPermissions = new ArrayList<>();
         PermissionResponse permissionResponse = new PermissionResponse();
         permissionResponse.setResource("ALL_FUNCTIONS");
