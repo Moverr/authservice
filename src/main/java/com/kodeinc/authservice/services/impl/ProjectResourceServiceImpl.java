@@ -179,11 +179,9 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
                 case MINE ->
                         projectResources = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(), pageable);
 
-
                 case NONE -> throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
 
                 case ROLE -> throw new RuntimeException("Not yet implemented role level");
-
 
                 case FULL -> projectResources = repository.findAll(pageable);
                 default -> throw new KhoodiUnAuthroizedException("You are not authorized");
@@ -199,6 +197,29 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
 
     }
 
+
+
+    /**
+     * @param httpServletRequest
+     * @param id
+     * We are going to replace this with a safe delete option
+     */
+    @Deprecated
+    @Override
+    public void delete(HttpServletRequest httpServletRequest, long id) throws CustomNotFoundException{
+        log.info("Deleting a record {} ",id);
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getDelete()!= (PermissionLevelEnum.NONE))) {
+            ProjectResource projectResource = repository.findById(id).orElseThrow(() -> new CustomNotFoundException("Record does not exist"));
+            repository.delete(projectResource);
+        }else{
+            log.info("UnAuthorized Access {} ",httpServletRequest.toString());
+            throw new KhoodiUnAuthroizedException("You dont have permission delete");
+
+        }
+
+    }
+
     private static CustomPage<ProjectResourceResponse> getCustomPage(Page<ProjectResource> projectResources, List<ProjectResourceResponse> responses) {
         CustomPage<ProjectResourceResponse> customResponse = new CustomPage<>();
         customResponse.setData(responses);
@@ -207,15 +228,6 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
         customResponse.setPageNumber(projectResources.getNumber());
         customResponse.setTotalElements(projectResources.getTotalElements());
         return customResponse;
-    }
-
-    /**
-     * @param httpServletRequest
-     * @param id
-     */
-    @Override
-    public void delete(HttpServletRequest httpServletRequest, long id) {
-
     }
 
     private static List<PermissionResponse> getPermission() {

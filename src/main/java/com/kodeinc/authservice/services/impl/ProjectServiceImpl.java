@@ -135,10 +135,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             return populate(optionalProject.get());
 
         }
-        else
+        else {
+            log.info("UnAuthorized Access {} ",httpServletRequest.toString());
             throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
-
-
+        }
 
 
     }
@@ -189,6 +189,17 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     }
 
+    @Override
+    public void delete(HttpServletRequest httpServletRequest, long id) {
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getDelete()!= (PermissionLevelEnum.NONE))) {
+            Project  project = repository.findById(id).orElseThrow(()-> new CustomNotFoundException("Record does not exist"));
+            repository.delete(project);
+        }else
+            throw new KhoodiUnAuthroizedException("You dont have permission to view");
+
+    }
+
     private static CustomPage<ProjectResponseDTO> getCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
         customResponse.setData(responses);
@@ -199,16 +210,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         return customResponse;
     }
 
-    @Override
-    public void delete(HttpServletRequest httpServletRequest, long id) {
-        Optional<Project> optionalProject = repository.findById(id);
-        if (optionalProject.isEmpty()) {
-            throw new CustomNotFoundException("Record does not exist");
-        }
-        Project project = optionalProject.get();
-        //permanent delete
-        repository.delete(project);
-    }
 
 
     private static List<PermissionResponse> getPermission() {
