@@ -13,6 +13,7 @@ public class PermissionRequest {
     @JsonProperty("create")
     @NotNull(message = "Create permission level   is mandatory ")
     private PermissionLevelEnum create;
+
     @JsonProperty("read")
     @NotNull(message = "Read permission level   is mandatory ")
     private PermissionLevelEnum read;

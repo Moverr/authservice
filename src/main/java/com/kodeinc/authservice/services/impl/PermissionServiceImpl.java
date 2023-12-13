@@ -1,13 +1,22 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.models.entities.Permission;
+import com.kodeinc.authservice.models.entities.Project;
+import com.kodeinc.authservice.models.entities.ProjectResource;
+import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.PermissionRepository;
+import com.kodeinc.authservice.repositories.ProjectResourceRepository;
 import com.kodeinc.authservice.services.PermissionService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +29,15 @@ import java.util.Set;
  * @Date 2023-12-14
  * @Email moverr@gmail.com
  */
+
+@Slf4j
 @Service
-public class PermissionServiceImpl implements PermissionService {
+public class PermissionServiceImpl extends BaseServiceImpl implements PermissionService  {
 
     @Autowired
-    private  PermissionRepository permissionRepository;
+    private  PermissionRepository repository;
+
+    private ProjectResourceRepository projectResourceRepository;
 
     /**
      * @param httpServletRequest
@@ -33,7 +46,19 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @Override
     public PermissionResponse create(HttpServletRequest httpServletRequest, PermissionRequest request) {
-        return null;
+
+        log.info("ProjectServiceImpl   create method");
+
+        //todo: validate user access
+        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+            return populate(repository.save(populate(request)));
+        } else {
+            throw new KhoodiUnAuthroizedException("You dont have permission to create projects");
+        }
+
+
     }
 
     /**
@@ -92,6 +117,20 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public PermissionResponse populate(Permission entity) {
         return null;
+    }
+
+
+    public Permission populate(PermissionRequest entity) {
+        ProjectResource projectResource = projectResourceRepository.findById(entity.getResourceID()).orElseThrow(()->new CustomNotFoundException("Resource not found"));
+
+        Permission permission = new Permission();
+        permission.setComment(entity.getComment());
+        permission.setCreate(entity.getCreate());
+        permission.setRead(entity.getRead());
+        permission.setUpdate(entity.getUpdate());
+        permission.setDelete(entity.getDelete());
+        permission.setResource(projectResource);
+        return permission;
     }
 
 
