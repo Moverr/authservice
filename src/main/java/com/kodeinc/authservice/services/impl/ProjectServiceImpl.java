@@ -177,9 +177,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                 default ->
                         throw new KhoodiUnAuthroizedException("You are not authorized");
 
-
             }
-
 
             List<ProjectResponseDTO> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
 
