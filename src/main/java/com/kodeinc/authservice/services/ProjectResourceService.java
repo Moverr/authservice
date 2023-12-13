@@ -1,11 +1,9 @@
 package com.kodeinc.authservice.services;
 
-import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.requests.ProjectResourceRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResourceResponse;
-import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
