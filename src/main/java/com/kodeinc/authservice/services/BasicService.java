@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Component
 public
-interface BasicService <T,R,X>{
+interface BasicService <T,R>{
 
 
     R create(T request);
