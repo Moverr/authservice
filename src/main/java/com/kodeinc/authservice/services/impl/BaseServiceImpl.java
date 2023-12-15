@@ -5,10 +5,10 @@ import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.BaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Muyinda Rogers
@@ -32,24 +32,19 @@ public class BaseServiceImpl implements BaseService {
         AuthResponse response = validateAuth(request);
         UserResponse user = response.getUser();
 
-        for (RoleResponse roleResponse : user.getRoles()) {
-            for (RoleResponse expectedRole : expectedRoles) {
-                //todo: find if there is a role as expected , exists in the user response
-                if (expectedRole.getName().equalsIgnoreCase(roleResponse.getName())) {
-                    for (PermissionResponse permissionResponse : roleResponse.getPermissions()) {
-                        for (PermissionResponse expectedPermision : expectedRole.getPermissions()) {
-                            //todo: find if there is a user permission pre set to the role.
-                            if (expectedPermision.getName().equalsIgnoreCase(permissionResponse.getName())) {
-                                 return permissionResponse;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        Optional<PermissionResponse> permissionResponse = user.getRoles()
+                .stream()
+                .filter(role ->
+                     expectedRoles.stream().anyMatch(expectedRole -> expectedRole.getName().equalsIgnoreCase(role.getName()))
+                ).flatMap(role ->
+                    role.getPermissions().stream()
+                )
+                .filter(permission ->
+                    expectedRoles.stream().flatMap(expectedRole -> expectedRole.getPermissions().stream())
+                            .anyMatch(expectedPerm -> expectedPerm.getResource().equalsIgnoreCase(permission.getResource()))
+                ).findFirst();
 
-
-        return null;
+        return permissionResponse.orElse(null);
     }
 
 
@@ -60,31 +55,18 @@ public class BaseServiceImpl implements BaseService {
         AuthResponse response = validateAuth(request);
         UserResponse user = response.getUser();
 
-        for (RoleResponse roleResponse : user.getRoles()) {
+        Optional<AuthorizeRequestResponse> authorizeRequestResponse = user.getRoles().stream()
+                .flatMap(role ->role.getPermissions().stream())
+                .filter(permission -> expectedPermissions.stream()
+                        .anyMatch(expectedPerm -> expectedPerm.getResource().equalsIgnoreCase(permission.getResource()))
+                )
+                .map(permission -> AuthorizeRequestResponse.builder()
+                        .auth(response)
+                        .permission(permission)
+                        .build())
+                .findFirst();
 
-
-                    for (PermissionResponse permissionResponse : roleResponse.getPermissions()) {
-                        for (PermissionResponse expectedPermision : expectedPermissions) {
-                            //todo: find if there is a user permission pre set to the role.
-                            if (expectedPermision.getName().equalsIgnoreCase(permissionResponse.getName())) {
-                                /*
-                                Return user permission. further checking would be
-                                on the level of permission ..
-                                 */
-                                return  AuthorizeRequestResponse.builder()
-                                        .auth(response)
-                                        .permission(permissionResponse).build()
-                                ;
-
-                            }
-                        }
-                    }
-
-
-        }
-
-
-        return null;
+        return authorizeRequestResponse.orElse(null);
     }
 
 
