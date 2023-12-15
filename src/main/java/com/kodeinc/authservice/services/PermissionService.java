@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.services;
 
+import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
 import com.kodeinc.authservice.models.dtos.requests.RoleRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
@@ -15,20 +16,19 @@ import java.util.Set;
 
 /**
  * @author Muyinda Rogers
- * @Date 2023-11-28
+ * @Date 2023-12-13
  * @Email moverr@gmail.com
  */
-public interface RoleService {
-     RoleResponseDTO create(HttpServletRequest httpServletRequest, RoleRequest request);
-     RoleResponseDTO update(HttpServletRequest httpServletRequest, long id, RoleRequest request);
-     RoleResponseDTO getByID(HttpServletRequest httpServletRequest, long id);
-      CustomPage<RoleResponseDTO> list(HttpServletRequest httpServletRequest, SearchRequest query);
+public interface PermissionService {
 
-     void delete(HttpServletRequest httpServletRequest, long id);
-      Set<Role> findRoles(List<Long> roleIds);
-     RoleResponse populate(Role entity);
-     PermissionResponse populate(Permission entity);
+    PermissionResponse create(HttpServletRequest httpServletRequest, PermissionRequest request);
+    PermissionResponse update(HttpServletRequest httpServletRequest, long id, PermissionRequest request);
+    PermissionResponse getByID(HttpServletRequest httpServletRequest, long id);
+    CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, SearchRequest query);
 
+    void delete(HttpServletRequest httpServletRequest, long id);
+    Set<Permission> findPermissions(List<Long> permissionIds);
+    PermissionResponse populate(Permission entity);
 
 
 }

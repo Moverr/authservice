@@ -3,9 +3,7 @@ package com.kodeinc.authservice.models.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
 import java.util.Set;
 
 
@@ -30,7 +28,7 @@ public class Role  extends BaseEntity  {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "role_permission",
+            name = "role_permission_resource",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )

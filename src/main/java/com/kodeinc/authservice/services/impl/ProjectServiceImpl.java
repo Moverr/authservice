@@ -9,8 +9,6 @@ import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.ProjectRepository;
-import com.kodeinc.authservice.services.BaseService;
-import com.kodeinc.authservice.services.BasicService;
 import com.kodeinc.authservice.services.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +39,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     public ProjectResponseDTO create(HttpServletRequest httpServletRequest, ProjectRequest request) throws CustomBadRequestException {
         log.info("ProjectServiceImpl   create method");
 
-
         //todo: validate user access
         AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
 
-        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
             List<Project> projectList = repository.findAllByNameAndCode(request.getName(), request.getCode());
             if (!projectList.isEmpty()) {
                 throw new CustomBadRequestException("Project Already Exists");
@@ -69,7 +66,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
 
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
 
 
             List<Project> projectList = repository.findByNameAndCodeAndNotID(id, request.getName(), request.getCode());
@@ -110,13 +107,13 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     @Override
     public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
             Optional<Project> optionalProject = repository.findById(id);
             if (optionalProject.isEmpty()) {
                 throw new CustomNotFoundException("Record does not exist");
             }
 
-            switch (authResponse.getPermission().getUpdate()){
+            switch (authResponse.getPermission().getRead()){
                 case MINE -> {
                     if(optionalProject.get().getCreatedBy() != authResponse.getAuth().getUser().getUserId()){
                         throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
@@ -138,10 +135,10 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             return populate(optionalProject.get());
 
         }
-        else
+        else {
+            log.info("UnAuthorized Access {} ",httpServletRequest.toString());
             throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
-
-
+        }
 
 
     }
@@ -158,13 +155,12 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             default -> sort.descending();
         };
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
-        if (authResponse.getPermission() != null && (authResponse.getPermission().getName().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getUpdate()!= (PermissionLevelEnum.NONE))) {
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
 
             Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
-            Page<Project> projects = null;
-            //= repository.findAll(pageable);
+            Page<Project> projects;
 
-            switch (authResponse.getPermission().getUpdate()){
+            switch (authResponse.getPermission().getRead()){
                 case MINE ->
                      projects = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(),pageable);
 
@@ -172,21 +168,20 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                 case NONE ->
                         throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
 
-                case ROLE -> {
-                    //todo: find if the user exists in the same role.
-                }
+                case ROLE ->
+                    throw new RuntimeException("Not yet implemented role level");
+
+
                 case FULL ->
                     projects = repository.findAll(pageable);
-
+                default ->
+                        throw new KhoodiUnAuthroizedException("You are not authorized");
 
             }
 
-
             List<ProjectResponseDTO> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
 
-            CustomPage<ProjectResponseDTO> customResponse = getProjectResponseDTOCustomPage(projects, responses);
-
-            return customResponse;
+            return getCustomPage(projects, responses);
 
         }else
             throw new KhoodiUnAuthroizedException("You dont have permission to view");
@@ -194,9 +189,20 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     }
 
-    private static CustomPage<ProjectResponseDTO> getProjectResponseDTOCustomPage(Page<Project> projects, List<?> responses) {
+    @Override
+    public void delete(HttpServletRequest httpServletRequest, long id) {
+        AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getDelete()!= (PermissionLevelEnum.NONE))) {
+            Project  project = repository.findById(id).orElseThrow(()-> new CustomNotFoundException("Record does not exist"));
+            repository.delete(project);
+        }else
+            throw new KhoodiUnAuthroizedException("You dont have permission to view");
+
+    }
+
+    private static CustomPage<ProjectResponseDTO> getCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
-//        customResponse.setData(responses);
+        customResponse.setData(responses);
         customResponse.setPageNumber(projects.getNumber());
         customResponse.setPageSize(projects.getSize());
         customResponse.setPageNumber(projects.getNumber());
@@ -204,31 +210,19 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
         return customResponse;
     }
 
-    @Override
-    public void delete(HttpServletRequest httpServletRequest, long id) {
-        Optional<Project> optionalProject = repository.findById(id);
-        if (optionalProject.isEmpty()) {
-            throw new CustomNotFoundException("Record does not exist");
-        }
-        Project project = optionalProject.get();
-        //permanent delete
-        repository.delete(project);
-    }
 
 
     private static List<PermissionResponse> getPermission() {
 
-
         List<PermissionResponse> expectedPermissions = new ArrayList<>();
         PermissionResponse permissionResponse = new PermissionResponse();
-        permissionResponse.setName("ALL_FUNCTIONS");
+        permissionResponse.setResource("ALL_FUNCTIONS");
         expectedPermissions.add(permissionResponse);
         permissionResponse = new PermissionResponse();
         //todo: if some one has permission projects, and also de
-        permissionResponse.setName("PROJECTS");
+        permissionResponse.setResource("PROJECTS");
         expectedPermissions.add(permissionResponse);
         return expectedPermissions;
-
 
     }
 

@@ -14,9 +14,6 @@ import org.springframework.security.core.GrantedAuthority;
 public class Permission extends BaseEntity  {
 
 
-    @Column(name = "name")
-    private String name;
-
     @Column(name = "create")
     @Enumerated(EnumType.STRING)
     private PermissionLevelEnum create;

@@ -62,5 +62,4 @@ public class BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private GeneralStatusEnum status;
 
-
 }

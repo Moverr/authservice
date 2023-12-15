@@ -9,8 +9,8 @@ import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.repositories.RoleRepository;
-import com.kodeinc.authservice.services.BasicService;
 import com.kodeinc.authservice.services.RoleService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,35 +20,36 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
- public class RoleServiceImpl implements RoleService,BasicService<RoleRequest,RoleResponseDTO, Role> {
+ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RoleRepository roleRepository;
 
     @Override
-    public RoleResponseDTO create(RoleRequest request) {
+    public RoleResponseDTO create(HttpServletRequest httpServletRequest, RoleRequest request) {
         return null;
     }
 
     @Override
-    public RoleResponseDTO update(long id, RoleRequest request) {
+    public RoleResponseDTO update(HttpServletRequest httpServletRequest, long id, RoleRequest request) {
         return null;
     }
 
     @Override
-    public CustomPage<RoleResponseDTO> list(SearchRequest query) {
+    public CustomPage<RoleResponseDTO> list(HttpServletRequest httpServletRequest, SearchRequest query) {
         return null;
     }
 
     @Override
-    public RoleResponseDTO getByID(long id) {
+    public RoleResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
         return  null;
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(HttpServletRequest httpServletRequest, long id) {
 
     }
+
 
 
     @Override
@@ -58,6 +59,7 @@ import java.util.stream.Collectors;
 
 
 
+    @Override
     public RoleResponse populate(Role entity){
         RoleResponse roleResponse = new RoleResponse();
         roleResponse.setName(entity.getName());
@@ -65,15 +67,18 @@ import java.util.stream.Collectors;
         return  roleResponse;
     }
 
+    @Override
     public PermissionResponse populate(Permission entity){
 
         PermissionResponse permissionResponse = new PermissionResponse();
-        permissionResponse.setName(entity.getName());
+        if(entity.getResource() != null)
+            permissionResponse.setResource(entity.getResource().getName());
         permissionResponse.setRead(entity.getRead());
         permissionResponse.setCreate(entity.getCreate());
         permissionResponse.setUpdate(entity.getUpdate());
         permissionResponse.setDelete(entity.getDelete());
-        permissionResponse.setResource(entity.getResource());
+        if(entity.getResource() != null)
+            permissionResponse.setResource(entity.getResource().getName());
 
 
         return  permissionResponse;
