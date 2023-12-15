@@ -9,7 +9,6 @@ import com.kodeinc.authservice.models.dtos.responses.RoleResponseDTO;
 import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.repositories.RoleRepository;
-import com.kodeinc.authservice.services.BasicService;
 import com.kodeinc.authservice.services.RoleService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -55,7 +55,7 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
         AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
 
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
-            List<ProjectResource> projectList = repository.findAllByNameAndProject(request.getName(), request.getProjectId());
+            List<ProjectResource> projectList = repository.findResourcesByNameandProject(request.getName(), request.getProjectId());
             if (!projectList.isEmpty()) {
                 throw new CustomBadRequestException("Project Resource Already Exists");
             }
