@@ -92,8 +92,6 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
 
 
 
-
-
     public UserResponse populate(User entity){
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(entity.getId());
