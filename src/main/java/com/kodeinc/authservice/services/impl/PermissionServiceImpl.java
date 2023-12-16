@@ -3,10 +3,12 @@ package com.kodeinc.authservice.services.impl;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
+import com.kodeinc.authservice.models.dtos.requests.ProjectResourceRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
+import com.kodeinc.authservice.models.dtos.responses.ProjectResourceResponse;
 import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.ProjectResource;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
@@ -154,7 +156,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
             case "id" -> Sort.by("id");
             case "created_at" -> Sort.by("created_at");
             case "updated_at" -> Sort.by("updated_at");
-            default -> Sort.by("name");
+            default -> Sort.by("id");
         };
 
         sort = switch (query.getSortType()) {
@@ -242,7 +244,6 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
         permissionResponse.setUpdate(entity.getUpdate());
         permissionResponse.setRead(entity.getRead());
         permissionResponse.setDelete(entity.getDelete());
-        permissionResponse.setComment(entity.getComment());
         permissionResponse.setResource(entity.getResource().getName());
 
         return permissionResponse;

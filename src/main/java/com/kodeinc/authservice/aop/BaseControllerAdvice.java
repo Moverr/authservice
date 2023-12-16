@@ -99,6 +99,7 @@ public class BaseControllerAdvice {
     public ResponseEntity<ErrorResponseDTO> handleGenericError(
             Exception e
     ) {
+        e.printStackTrace();
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         return getErrorResponseDTOResponseEntity(e, status,null);

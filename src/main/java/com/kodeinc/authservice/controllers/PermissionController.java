@@ -47,7 +47,7 @@ public class PermissionController extends BaseController<PermissionResponse>{
             @RequestParam(value="offset",defaultValue = "0")  int offset,
             @RequestParam(value="limit",defaultValue = "20")    int limit,
             @RequestParam(value="sort_by",defaultValue = "updated_at") String sortBy,
-            @RequestParam(value="sort_type",defaultValue = "updated_at") String sortType
+            @RequestParam(value="sort_type",defaultValue = "asc") String sortType
     ){
         SearchRequest request = new SearchRequest(query,offset,limit,sortBy,sortType);
         return ResponseEntity.ok( service.list(httpServletRequest,request));
