@@ -3,12 +3,11 @@ package com.kodeinc.authservice.services.impl;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
-import com.kodeinc.authservice.models.dtos.requests.ProjectResourceRequest;
+import com.kodeinc.authservice.models.dtos.requests.PermissionSearchRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
-import com.kodeinc.authservice.models.dtos.responses.ProjectResourceResponse;
 import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.ProjectResource;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
@@ -149,7 +148,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
      * @return
      */
     @Override
-    public CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, SearchRequest query) {
+    public CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, PermissionSearchRequest query) {
 
         Sort sort = switch (query.getSortBy()) {
             case "code" -> Sort.by("code");
@@ -172,7 +171,12 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
             switch (authResponse.getPermission().getRead()) {
                 case MINE ->
-                        permissionPage = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(), pageable);
+                    permissionPage =   query.getResourceId() != null ?
+                      repository.findAllByCreatedByAndResource(authResponse.getAuth().getUser().getUserId(), query.getResourceId(), pageable)
+                    :
+                     repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(), pageable);
+
+
 
                 case NONE -> throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
 

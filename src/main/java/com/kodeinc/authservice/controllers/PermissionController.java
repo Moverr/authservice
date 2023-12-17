@@ -1,6 +1,7 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
+import com.kodeinc.authservice.models.dtos.requests.PermissionSearchRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
@@ -43,13 +44,15 @@ public class PermissionController extends BaseController<PermissionResponse>{
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CustomPage<PermissionResponse>>  getList(
             HttpServletRequest httpServletRequest,
+            @RequestParam(value="resource_id",required = false) Long resourceId,
             @RequestParam(value="query",required = false) String query,
             @RequestParam(value="offset",defaultValue = "0")  int offset,
             @RequestParam(value="limit",defaultValue = "20")    int limit,
             @RequestParam(value="sort_by",defaultValue = "updated_at") String sortBy,
             @RequestParam(value="sort_type",defaultValue = "asc") String sortType
+
     ){
-        SearchRequest request = new SearchRequest(query,offset,limit,sortBy,sortType);
+        PermissionSearchRequest request = new PermissionSearchRequest(resourceId,query,offset,limit,sortBy,sortType);
         return ResponseEntity.ok( service.list(httpServletRequest,request));
     }
 

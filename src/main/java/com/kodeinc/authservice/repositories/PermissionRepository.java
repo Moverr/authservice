@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PermissionRepository extends JpaRepository<Permission,Long> {
 
     Page<Permission> findAllByCreatedBy(long createdBy, Pageable pageable);
+    Page<Permission> findAllByCreatedByAndResource(long createdBy,long resourceId, Pageable pageable);
+
 }
