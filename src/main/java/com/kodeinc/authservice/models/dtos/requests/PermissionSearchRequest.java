@@ -1,10 +1,8 @@
 package com.kodeinc.authservice.models.dtos.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  * @author Muyinda Rogers
@@ -13,15 +11,14 @@ import org.springframework.data.jpa.repository.Query;
  */
 @Getter
 @Setter
-public class PermissionSearchRequest  extends SearchRequest{
+public class PermissionSearchRequest  extends SearchRequest {
 
     @JsonProperty("resource_id")
     private Long resourceId;
 
 
-    public PermissionSearchRequest(Long resourceId,String query, int offset, int limit, String sortBy, String sortType) {
+    public PermissionSearchRequest(Long resourceId, String query, int offset, int limit, String sortBy, String sortType) {
         super(query, offset, limit, sortBy, sortType);
         this.resourceId = resourceId;
-
-
+    }
 }

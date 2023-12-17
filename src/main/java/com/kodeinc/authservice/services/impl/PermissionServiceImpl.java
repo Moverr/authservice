@@ -182,7 +182,12 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
                 case ROLE -> throw new RuntimeException("Not yet implemented role level");
 
-                case FULL -> permissionPage = repository.findAll(pageable);
+                case FULL ->
+                        permissionPage =   query.getResourceId() != null ?
+                                repository.findAllByResource( query.getResourceId(), pageable)
+                                :
+                                repository.findAll(pageable);
+
                 default -> throw new KhoodiUnAuthroizedException("You are not authorized");
 
             }
