@@ -1,5 +1,7 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import jakarta.persistence.EnumType;
@@ -15,6 +17,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PermissionResponse {
 
     @JsonProperty("resource")

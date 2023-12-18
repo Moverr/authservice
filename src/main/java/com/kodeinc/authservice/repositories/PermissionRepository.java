@@ -12,11 +12,11 @@ public interface PermissionRepository extends JpaRepository<Permission,Long> {
 
     Page<Permission> findAllByCreatedBy(long createdBy, Pageable pageable);
 
-    @Query(value = "SELECT U from Permission U where  U.created_by = :createdBy and U.resource = :pr")
-    Page<Permission> findAllByCreatedByAndResource(long createdBy, ProjectResource pr, Pageable pageable);
+    @Query(value = "SELECT U from permissions U   INNER JOIN project_resources B ON U.resource_id = B.id where  U.created_by = :createdBy and U.resource_id = :pr",nativeQuery = true)
+    Page<Permission> findAllByCreatedByAndResource(@Param("createdBy") long createdBy,@Param("pr")  long pr, Pageable pageable);
 
-    @Query(value = "SELECT U from Permission U  U.resource = :pr ")
-    Page<Permission> findAllByResource(ProjectResource pr, Pageable pageable);
+    @Query(value = "SELECT U.* from permissions  U  INNER JOIN project_resources B ON U.resource_id = B.id where U.resource_id = :pr ",nativeQuery = true)
+    Page<Permission> findAllByResource(@Param("pr")  long pr, Pageable pageable);
 
 
 }

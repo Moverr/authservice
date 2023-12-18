@@ -4,7 +4,6 @@ import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
 import com.kodeinc.authservice.models.dtos.requests.PermissionSearchRequest;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
@@ -42,6 +41,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     @Autowired
     private  PermissionRepository repository;
 
+    @Autowired
     private ProjectResourceRepository projectResourceRepository;
 
     /**
@@ -152,7 +152,6 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
         Sort sort = switch (query.getSortBy()) {
             case "code" -> Sort.by("code");
-            case "id" -> Sort.by("id");
             case "created_at" -> Sort.by("createdAt");
             case "updated_at" -> Sort.by("updatedAt");
             default -> Sort.by("id");
@@ -162,8 +161,11 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
             case "asc" -> sort.ascending();
             default -> sort.descending();
         };
-
-        ProjectResource pr = query.getResourceId() != null ?  projectResourceRepository.findById(query.getResourceId()).orElseThrow(()-> new CustomNotFoundException(String.format("Project Resource with id %s could not be found",query.getResourceId()))) : null;
+        ProjectResource projectResource = null;
+        if(query.getResourceId() != null){
+            projectResourceRepository.findById(query.getResourceId()).orElseThrow(()-> new CustomNotFoundException(String.format("Project Resource with id %s could not be found",query.getResourceId())));
+        }
+       // ProjectResource projectResource = query.getResourceId() != null ?  : null;
 
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead() != (PermissionLevelEnum.NONE))) {
@@ -174,7 +176,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
             switch (authResponse.getPermission().getRead()) {
                 case MINE ->
                     permissionPage =   query.getResourceId() != null ?
-                      repository.findAllByCreatedByAndResource(authResponse.getAuth().getUser().getUserId(), pr, pageable)
+                      repository.findAllByCreatedByAndResource(authResponse.getAuth().getUser().getUserId(), query.getResourceId(), pageable)
                     :
                      repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(), pageable);
 
@@ -186,7 +188,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
                 case FULL ->
                         permissionPage =   query.getResourceId() != null ?
-                                repository.findAllByResource( pr, pageable)
+                                repository.findAllByResource( query.getResourceId(), pageable)
                                 :
                                 repository.findAll(pageable);
 
