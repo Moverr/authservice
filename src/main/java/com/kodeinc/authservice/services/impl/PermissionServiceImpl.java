@@ -3,7 +3,7 @@ package com.kodeinc.authservice.services.impl;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
+import com.kodeinc.authservice.models.dtos.requests.PermissionSearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
@@ -41,6 +41,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     @Autowired
     private  PermissionRepository repository;
 
+    @Autowired
     private ProjectResourceRepository projectResourceRepository;
 
     /**
@@ -147,20 +148,24 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
      * @return
      */
     @Override
-    public CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, SearchRequest query) {
+    public CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, PermissionSearchRequest query) {
 
         Sort sort = switch (query.getSortBy()) {
             case "code" -> Sort.by("code");
-            case "id" -> Sort.by("id");
-            case "created_at" -> Sort.by("created_at");
-            case "updated_at" -> Sort.by("updated_at");
-            default -> Sort.by("name");
+            case "created_at" -> Sort.by("createdAt");
+            case "updated_at" -> Sort.by("updatedAt");
+            default -> Sort.by("id");
         };
 
         sort = switch (query.getSortType()) {
             case "asc" -> sort.ascending();
             default -> sort.descending();
         };
+        ProjectResource projectResource = null;
+        if(query.getResourceId() != null){
+            projectResourceRepository.findById(query.getResourceId()).orElseThrow(()-> new CustomNotFoundException(String.format("Project Resource with id %s could not be found",query.getResourceId())));
+        }
+       // ProjectResource projectResource = query.getResourceId() != null ?  : null;
 
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead() != (PermissionLevelEnum.NONE))) {
@@ -170,13 +175,23 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
             switch (authResponse.getPermission().getRead()) {
                 case MINE ->
-                        permissionPage = repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(), pageable);
+                    permissionPage =   query.getResourceId() != null ?
+                      repository.findAllByCreatedByAndResource(authResponse.getAuth().getUser().getUserId(), query.getResourceId(), pageable)
+                    :
+                     repository.findAllByCreatedBy(authResponse.getAuth().getUser().getUserId(), pageable);
+
+
 
                 case NONE -> throw new KhoodiUnAuthroizedException("You dont have permission to view this record");
 
                 case ROLE -> throw new RuntimeException("Not yet implemented role level");
 
-                case FULL -> permissionPage = repository.findAll(pageable);
+                case FULL ->
+                        permissionPage =   query.getResourceId() != null ?
+                                repository.findAllByResource( query.getResourceId(), pageable)
+                                :
+                                repository.findAll(pageable);
+
                 default -> throw new KhoodiUnAuthroizedException("You are not authorized");
 
             }
@@ -242,8 +257,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
         permissionResponse.setUpdate(entity.getUpdate());
         permissionResponse.setRead(entity.getRead());
         permissionResponse.setDelete(entity.getDelete());
-        permissionResponse.setComment(entity.getComment());
-        permissionResponse.setResource(entity.getResource().getName());
+       // permissionResponse.setResource(entity.getResource().getName());
 
         return permissionResponse;
     }

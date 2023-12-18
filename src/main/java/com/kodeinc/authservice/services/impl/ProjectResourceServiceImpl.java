@@ -60,9 +60,9 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
                 throw new CustomBadRequestException("Project Resource Already Exists");
             }
             return populate(repository.save(populate(request)));
-        } else {
+        } else
             throw new KhoodiUnAuthroizedException("You dont have permission to create projects");
-        }
+
     }
 
 
@@ -103,9 +103,8 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
 
             return this.populate(repository.save(newRecordUpdate));
 
-        } else {
+        } else
             throw new KhoodiUnAuthroizedException("You dont have permission to update projects");
-        }
 
     }
 
