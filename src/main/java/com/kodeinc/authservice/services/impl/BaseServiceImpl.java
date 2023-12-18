@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.BaseService;
@@ -44,7 +45,7 @@ public class BaseServiceImpl implements BaseService {
                             .anyMatch(expectedPerm -> expectedPerm.getResource().equalsIgnoreCase(permission.getResource()))
                 ).findFirst();
 
-        return permissionResponse.orElse(null);
+        return permissionResponse.orElseThrow(()-> new KhoodiUnAuthroizedException("You are not authorized to access this resource"));
     }
 
 
@@ -66,7 +67,7 @@ public class BaseServiceImpl implements BaseService {
                         .build())
                 .findFirst();
 
-        return authorizeRequestResponse.orElse(null);
+        return authorizeRequestResponse.orElseThrow(()-> new KhoodiUnAuthroizedException("You are not authorized to access this resource"));
     }
 
 

@@ -1,6 +1,7 @@
 package com.kodeinc.authservice.services;
 
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
+import com.kodeinc.authservice.models.dtos.requests.PermissionSearchRequest;
 import com.kodeinc.authservice.models.dtos.requests.RoleRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
@@ -24,7 +25,7 @@ public interface PermissionService {
     PermissionResponse create(HttpServletRequest httpServletRequest, PermissionRequest request);
     PermissionResponse update(HttpServletRequest httpServletRequest, long id, PermissionRequest request);
     PermissionResponse getByID(HttpServletRequest httpServletRequest, long id);
-    CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, SearchRequest query);
+    CustomPage<PermissionResponse> list(HttpServletRequest httpServletRequest, PermissionSearchRequest query);
 
     void delete(HttpServletRequest httpServletRequest, long id);
     Set<Permission> findPermissions(List<Long> permissionIds);

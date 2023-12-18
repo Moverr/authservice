@@ -46,7 +46,7 @@ public class Permission extends BaseEntity  {
     @Column(name = "writable_fields",columnDefinition = "json")
     private String writableFields;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
     private ProjectResource resource;
 
