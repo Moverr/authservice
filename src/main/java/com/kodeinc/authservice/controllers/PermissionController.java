@@ -2,7 +2,6 @@ package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.models.dtos.requests.PermissionRequest;
 import com.kodeinc.authservice.models.dtos.requests.PermissionSearchRequest;
-import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.services.PermissionService;

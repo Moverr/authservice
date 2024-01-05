@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,15 +22,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
 
     @Autowired
     private JwtAthFilter jwtAthFilter;
     @Autowired
     private UserDetailsService uds;
-
+   // http://localhost:8082/openapi/swagger-config
     private static final String[] WHITE_LIST = {
             "/","/actuator/**","/v1/auth","/v1/auth/validate"
+           ,"/v3/api-docs" ,"/swagger-ui/index.html","/swagger-ui.html"
+            ,"/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "openapi/**"
     };
 
 
