@@ -16,13 +16,16 @@ public class CustomUserDetails extends User {
     private Set<Role> customRoles;
     private Set<Permission> customPermissions;
 
-    public CustomUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
+    private  long userId;
+
+    public CustomUserDetails(long userId,String username, String password, boolean enabled, boolean accountNonExpired,
                              boolean credentialsNonExpired, boolean accountNonLocked,
                              Collection<? extends GrantedAuthority> authorities
                              ,Set<Role> roles
     ) {
     super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.customRoles = roles;
+        this.userId = userId;
 
     }
 

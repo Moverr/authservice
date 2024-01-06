@@ -1,14 +1,20 @@
 package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.UserRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
+import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.User;
+import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.UserRepository;
 import com.kodeinc.authservice.services.RoleService;
 import com.kodeinc.authservice.services.UsersService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +22,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,8 +36,9 @@ import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
  * @Email moverr@gmail.com
  */
 
+@Slf4j
 @Service
-public class UserServiceImpl implements UsersService, UserDetailsService{
+public class UserServiceImpl extends BaseServiceImpl implements UsersService, UserDetailsService{
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");
@@ -42,7 +51,16 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
     @Autowired
     private RoleService roleService;
 
-
+    private static List<PermissionResponse> getPermission() {
+        List<PermissionResponse> expectedPermissions = new ArrayList<>();
+        PermissionResponse permissionResponse = new PermissionResponse();
+        permissionResponse.setResource("ALL_FUNCTIONS");
+        expectedPermissions.add(permissionResponse);
+        permissionResponse = new PermissionResponse();
+        permissionResponse.setResource("USERS");
+        expectedPermissions.add(permissionResponse);
+        return expectedPermissions;
+    }
 
     // Development..
     public  UserDetails findUserByEmail(String username){
@@ -58,6 +76,7 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
         User user = optionalUser.orElseThrow(() -> new UsernameNotFoundException("User does not exist in the system"));
 
         return new CustomUserDetails(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
@@ -68,29 +87,73 @@ public class UserServiceImpl implements UsersService, UserDetailsService{
     }
 
     @Override
-    public UserResponse create(UserRequest request) {
-    //todo: va;idate permissions, validate user should not exist. and them create
-        Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
-        if(optionalUser.isPresent()){
-            //todo: thinking point, user vs multiple projects
-            throw new CustomBadRequestException("Username already exists in the database");
+    public UserResponse create(HttpServletRequest httpServletRequest, UserRequest request) {
+
+        log.info("UserServiceImpl   create method");
+        //todo: validate user access
+        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+            {
+                //todo: va;idate permissions, validate user should not exist. and them create
+                Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
+                if(optionalUser.isPresent()){
+                    //todo: thinking point, user vs multiple projects
+                    throw new CustomBadRequestException("Username already exists in the database");
+                }
+
+                //todo: get Existing Roles..
+                Set<Role> roles =  roleService.findRoles(request.getRoles());
+
+                //todo: setup the user with known roles and permissions
+
+                User user = new User();
+                user.setUsername(request.getUsername());
+                user.setPassword(passwordEncoder().encode(request.getPassword()));
+                user.setEnabled(true);
+                user.setRoles(roles);
+                user =   userRepository.save(user);
+                return populate(user);
+
+            }
+
+            }
+        else {
+            throw new KhoodiUnAuthroizedException("You dont have permission to create users");
         }
 
-        //todo: get Existing Roles..
-        Set<Role> roles =  roleService.findRoles(request.getRoles());
-
-        //todo: setup the user with known roles and permissions
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder().encode(request.getPassword()));
-        user.setEnabled(true);
-        user.setRoles(roles);
-        user =   userRepository.save(user);
-       return populate(user);
     }
 
+    /**
+     * @param httpServletRequest
+     * @param request
+     * @return
+     */
+    @Override
+    public UserResponse update(HttpServletRequest httpServletRequest, UserRequest request) {
+        log.info("ProjectServiceImpl   create method");
 
+        return null;
+    }
+
+    /**
+     * @param httpServletRequest
+     * @param request
+     * @return
+     */
+    @Override
+    public UserResponse activate(HttpServletRequest httpServletRequest, UserRequest request) {
+        return null;
+    }
+
+    /**
+     * @param httpServletRequest
+     * @param request
+     * @return
+     */
+    @Override
+    public UserResponse deactivate(HttpServletRequest httpServletRequest, UserRequest request) {
+        return null;
+    }
 
     public UserResponse populate(User entity){
         UserResponse userResponse = new UserResponse();

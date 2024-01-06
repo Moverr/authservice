@@ -110,9 +110,6 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-       // DefaultErrorType errorType = new BindingErrorType(ErrorCode.INVALID_INPUT_VALUE, error.getBindingResult());
-
-       // return new ErrorResponse(errorType).responseEntity();
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
@@ -122,9 +119,7 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ErrorResponseDTO> handleExpiredJwtException(ExpiredJwtException e) {
-//        DefaultErrorType errorType = new DefaultErrorType(ErrorCode.JWT_EXPIRED);
-//        return new ErrorResponse(errorType)
-//                .responseEntity();
+
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
@@ -140,9 +135,7 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(MalformedJwtException.class)
     public ResponseEntity<ErrorResponseDTO> handleMalformedJwtException(MalformedJwtException e) {
-//        DefaultErrorType errorType = new DefaultErrorType(ErrorCode.JWT_MALFORMED);
-//        return new ErrorResponse(errorType)
-//                .responseEntity();
+
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
@@ -152,9 +145,7 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(UnsupportedJwtException.class)
     public ResponseEntity<ErrorResponseDTO> handleUnsupportedJwtException(UnsupportedJwtException e) {
-//        DefaultErrorType errorType = new DefaultErrorType(ErrorCode.JWT_UNSUPPORTED);
-//        return new ErrorResponse(errorType)
-//                .responseEntity();
+
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
@@ -165,9 +156,7 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ErrorResponseDTO> handleSignatureException(SignatureException e) {
-//        DefaultErrorType errorType = new DefaultErrorType(ErrorCode.JWT_SIG_INVALID);
-//        return new ErrorResponse(errorType)
-//                .responseEntity();
+
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
@@ -177,9 +166,7 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorResponseDTO> handleJwtException(JwtException e) {
-//        DefaultErrorType errorType = new DefaultErrorType(ErrorCode.JWT_EXCEPTION);
-//        return new ErrorResponse(errorType)
-//                .responseEntity();
+
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
@@ -191,9 +178,6 @@ public class BaseControllerAdvice {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponseDTO> handleAuthenticationException(AuthenticationException e) {
-//        DefaultErrorType errorType = new DefaultErrorType(ErrorCode.HANDLE_ACCESS_DENIED);
-//        return new ErrorResponse(errorType).responseEntity();
-
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
