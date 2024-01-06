@@ -40,7 +40,7 @@ import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
 
 @Slf4j
 @Service
-public class UserServiceImpl extends BaseServiceImpl implements UsersService, UserDetailsService {
+public class UserServiceImpl  implements UsersService, UserDetailsService {
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");
@@ -82,7 +82,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
 
         log.info("UserServiceImpl   create method");
         //todo: validate user access
-        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+        AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl(). authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
             {
                 //todo: va;idate permissions, validate user should not exist. and them create
@@ -128,7 +128,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
     public UserResponse activate(HttpServletRequest httpServletRequest, long userId) {
         //todo: find if user exists
         log.info("UserServiceImpl   create method");
-        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+        AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl().authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
 
             User user = userRepository.findById(userId).orElseThrow(() -> new CustomNotFoundException("Project Resource not found"));
@@ -150,7 +150,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
     public UserResponse deactivate(HttpServletRequest httpServletRequest, long userId) {
         //todo: find if user exists
         log.info("UserServiceImpl   create method");
-        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+        AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl(). authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
 
             User user = userRepository.findById(userId).orElseThrow(() -> new CustomNotFoundException("Project Resource not found"));
