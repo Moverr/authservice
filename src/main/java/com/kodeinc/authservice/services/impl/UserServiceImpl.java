@@ -8,9 +8,9 @@ import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
-import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.User;
+import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.UserRepository;
 import com.kodeinc.authservice.services.RoleService;
@@ -40,11 +40,10 @@ import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
 
 @Slf4j
 @Service
-public class UserServiceImpl extends BaseServiceImpl implements UsersService, UserDetailsService{
+public class UserServiceImpl extends BaseServiceImpl implements UsersService, UserDetailsService {
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");
-
 
 
     @Autowired
@@ -54,10 +53,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
     private RoleService roleService;
 
 
-
     // Development..
-    public  UserDetails findUserByEmail(String username){
-        return  this.loadUserByUsername(username);
+    public UserDetails findUserByEmail(String username) {
+        return this.loadUserByUsername(username);
     }
 
     @Override
@@ -73,7 +71,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                true, true, true,user.getAuthorities(),user.getRoles()
+                true, true, true, user.getAuthorities(), user.getRoles()
         );
 
 
@@ -89,13 +87,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
             {
                 //todo: va;idate permissions, validate user should not exist. and them create
                 Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
-                if(optionalUser.isPresent()){
+                if (optionalUser.isPresent()) {
                     //todo: thinking point, user vs multiple projects
                     throw new CustomBadRequestException("Username already exists in the database");
                 }
 
                 //todo: get Existing Roles..
-                Set<Role> roles =  roleService.findRoles(request.getRoles());
+                Set<Role> roles = roleService.findRoles(request.getRoles());
 
                 //todo: setup the user with known roles and permissions
 
@@ -104,13 +102,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
                 user.setPassword(passwordEncoder().encode(request.getPassword()));
                 user.setEnabled(true);
                 user.setRoles(roles);
-                user =   userRepository.save(user);
+                user = userRepository.save(user);
                 return populate(user);
 
             }
 
-            }
-        else {
+        } else {
             throw new KhoodiUnAuthroizedException("You dont have permission to create users");
         }
 
@@ -121,40 +118,48 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
      * @param request
      * @return
      */
-    @Override
-    public UserResponse update(HttpServletRequest httpServletRequest,long userId, UserRequest request) {
-        log.info("ProjectServiceImpl   create method");
 
-        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
-
-        User user = userRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("User entity not found"));
-
-
-        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getUpdate().equals(PermissionLevelEnum.FULL))) {
-        }else{
-
-        }
-
-            return null;
-    }
 
     /**
      * @param httpServletRequest
      * @return
      */
     @Override
-    public UserResponse activate(HttpServletRequest httpServletRequest,  long userId) {
-        return null;
+    public UserResponse activate(HttpServletRequest httpServletRequest, long userId) {
+        //todo: find if user exists
+        log.info("UserServiceImpl   create method");
+        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+
+            User user = userRepository.findById(userId).orElseThrow(() -> new CustomNotFoundException("Project Resource not found"));
+            user.setStatus(GeneralStatusEnum.ACTIVE);
+            userRepository.save(user);
+
+            return populate(user);
+        } else
+            throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
+
+
     }
 
     /**
      * @param httpServletRequest
-
      * @return
      */
     @Override
     public UserResponse deactivate(HttpServletRequest httpServletRequest, long userId) {
-        return null;
+        //todo: find if user exists
+        log.info("UserServiceImpl   create method");
+        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+
+            User user = userRepository.findById(userId).orElseThrow(() -> new CustomNotFoundException("Project Resource not found"));
+            user.setStatus(GeneralStatusEnum.DEACTIVE);
+            userRepository.save(user);
+
+            return populate(user);
+        } else
+            throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
     }
 
     private static List<PermissionResponse> getPermission() {
@@ -169,11 +174,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
     }
 
 
-    public UserResponse populate(User entity){
+    public UserResponse populate(User entity) {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(entity.getId());
         userResponse.setUsername(entity.getUsername());
-        userResponse.setRoles( entity.getRoles().stream().map(x->roleService.populate(x)).collect(Collectors.toList()));
+        userResponse.setRoles(entity.getRoles().stream().map(x -> roleService.populate(x)).collect(Collectors.toList()));
         return userResponse;
     }
 

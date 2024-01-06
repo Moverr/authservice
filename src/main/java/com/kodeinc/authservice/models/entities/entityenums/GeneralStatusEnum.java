@@ -8,5 +8,6 @@ package com.kodeinc.authservice.models.entities.entityenums;
 public enum GeneralStatusEnum {
     PENDING,
     ACTIVE,
+    DEACTIVE,
     ARCHIVED
 }
