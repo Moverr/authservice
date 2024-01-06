@@ -1,12 +1,14 @@
 package com.kodeinc.authservice.services.impl;
 
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
+import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.models.dtos.requests.UserRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
+import com.kodeinc.authservice.models.entities.Permission;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.User;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
@@ -51,16 +53,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
     @Autowired
     private RoleService roleService;
 
-    private static List<PermissionResponse> getPermission() {
-        List<PermissionResponse> expectedPermissions = new ArrayList<>();
-        PermissionResponse permissionResponse = new PermissionResponse();
-        permissionResponse.setResource("ALL_FUNCTIONS");
-        expectedPermissions.add(permissionResponse);
-        permissionResponse = new PermissionResponse();
-        permissionResponse.setResource("USERS");
-        expectedPermissions.add(permissionResponse);
-        return expectedPermissions;
-    }
+
 
     // Development..
     public  UserDetails findUserByEmail(String username){
@@ -129,31 +122,52 @@ public class UserServiceImpl extends BaseServiceImpl implements UsersService, Us
      * @return
      */
     @Override
-    public UserResponse update(HttpServletRequest httpServletRequest, UserRequest request) {
+    public UserResponse update(HttpServletRequest httpServletRequest,long userId, UserRequest request) {
         log.info("ProjectServiceImpl   create method");
 
+        AuthorizeRequestResponse authenticatedPermission = authorizeRequestPermissions(httpServletRequest, getPermission());
+
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("User entity not found"));
+
+
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getUpdate().equals(PermissionLevelEnum.FULL))) {
+        }else{
+
+        }
+
+            return null;
+    }
+
+    /**
+     * @param httpServletRequest
+     * @return
+     */
+    @Override
+    public UserResponse activate(HttpServletRequest httpServletRequest,  long userId) {
         return null;
     }
 
     /**
      * @param httpServletRequest
-     * @param request
+
      * @return
      */
     @Override
-    public UserResponse activate(HttpServletRequest httpServletRequest, UserRequest request) {
+    public UserResponse deactivate(HttpServletRequest httpServletRequest, long userId) {
         return null;
     }
 
-    /**
-     * @param httpServletRequest
-     * @param request
-     * @return
-     */
-    @Override
-    public UserResponse deactivate(HttpServletRequest httpServletRequest, UserRequest request) {
-        return null;
+    private static List<PermissionResponse> getPermission() {
+        List<PermissionResponse> expectedPermissions = new ArrayList<>();
+        PermissionResponse permissionResponse = new PermissionResponse();
+        permissionResponse.setResource("ALL_FUNCTIONS");
+        expectedPermissions.add(permissionResponse);
+        permissionResponse = new PermissionResponse();
+        permissionResponse.setResource("USERS");
+        expectedPermissions.add(permissionResponse);
+        return expectedPermissions;
     }
+
 
     public UserResponse populate(User entity){
         UserResponse userResponse = new UserResponse();

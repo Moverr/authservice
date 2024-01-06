@@ -9,12 +9,12 @@ public  interface UsersService {
      UserResponse create(HttpServletRequest httpServletRequest, UserRequest request);
 
      //todo: update
-     UserResponse update(HttpServletRequest httpServletRequest, UserRequest request);
+     UserResponse update(HttpServletRequest httpServletRequest, long userId,UserRequest request);
 
      //todo:
-     UserResponse activate(HttpServletRequest httpServletRequest, UserRequest request);
+     UserResponse activate(HttpServletRequest httpServletRequest,long userId);
 
-     UserResponse deactivate(HttpServletRequest httpServletRequest, UserRequest request);
+     UserResponse deactivate(HttpServletRequest httpServletRequest, long userId);
 
 
 }
