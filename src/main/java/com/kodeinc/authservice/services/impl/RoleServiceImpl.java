@@ -57,7 +57,8 @@ import java.util.stream.Collectors;
     @Override
     public Set<Role> findRoles(List<Long> roleIds){
         log.info("Find Roles Method");
-        return new HashSet<>(roleRepository.findAllById(roleIds));
+       return  roleIds == null ? null :
+          new HashSet<>(roleRepository.findAllById(roleIds));
     }
 
 

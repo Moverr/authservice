@@ -8,22 +8,24 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Muyinda Rogers
  * @Date 2024-01-07
  * @Email moverr@gmail.com
  */
-@RestController("/v1/users")
+
+@RestController
+@RequestMapping("/v1/users")
+@Validated
+
 public class UsersController extends BaseController<UserResponse>{
     @Autowired
     UsersService service;
 
-    //todo: create
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> create(
             HttpServletRequest httpServletRequest,

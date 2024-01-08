@@ -22,6 +22,8 @@ public class BaseServiceImpl implements BaseService {
     @Autowired
     private AuthService service;
 
+
+
     public AuthResponse validateAuth(HttpServletRequest request) {
         return service.authenticate(request);
     }
@@ -68,6 +70,7 @@ public class BaseServiceImpl implements BaseService {
                 .findFirst();
 
         return authorizeRequestResponse.orElseThrow(()-> new KhoodiUnAuthroizedException("You are not authorized to access this resource"));
+
     }
 
 

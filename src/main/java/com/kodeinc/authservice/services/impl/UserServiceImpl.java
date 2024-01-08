@@ -1,9 +1,12 @@
 package com.kodeinc.authservice.services.impl;
 
+import com.kodeinc.authservice.configs.security.JwtUtils;
 import com.kodeinc.authservice.exceptions.CustomBadRequestException;
 import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
+import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.UserRequest;
+import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
@@ -59,6 +62,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
 
 
+
     // Development..
     public UserDetails findUserByEmail(String username) {
         return this.loadUserByUsername(username);
@@ -83,12 +87,46 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
     }
 
+    private  AuthorizeRequestResponse authenticate(HttpServletRequest request, List<PermissionResponse> expectedPermissions) throws KhoodiUnAuthroizedException {
+
+        String token = JwtUtils.extractToken(request);
+
+        if (token != null && JwtUtils.validateToken(token)) {
+            final String userName = JwtUtils.extractUsername(token.trim());
+            final CustomUserDetails userDetails = loadUserByUsername(userName);
+            if (userDetails == null) {
+                throw new KhoodiUnAuthroizedException("Invalid username or password");
+            }
+            AuthResponse response =  populateAuthResponse(userDetails);
+
+            UserResponse user = response.getUser();
+
+            Optional<AuthorizeRequestResponse> authorizeRequestResponse = user.getRoles().stream()
+                    .flatMap(role ->role.getPermissions().stream())
+                    .filter(permission -> expectedPermissions.stream()
+                            .anyMatch(expectedPerm -> expectedPerm.getResource().equalsIgnoreCase(permission.getResource()))
+                    )
+                    .map(permission -> AuthorizeRequestResponse.builder()
+                            .auth(response)
+                            .permission(permission)
+                            .build())
+                    .findFirst();
+
+            return authorizeRequestResponse.orElseThrow(()-> new KhoodiUnAuthroizedException("You are not authorized to access this resource"));
+
+
+
+        } else
+            throw new KhoodiUnAuthroizedException("Invalid or missing token");
+
+    }
+
     @Override
     public UserResponse create(HttpServletRequest httpServletRequest, UserRequest request) {
 
         log.info("UserServiceImpl   create method");
         //todo: validate user access
-        AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl(). authorizeRequestPermissions(httpServletRequest, getPermission());
+        AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
             {
                 Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
@@ -97,13 +135,14 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
                 }
 
                 Set<Role> roles = roleService.findRoles(request.getRoles());
-                Set<Project> projects = projectService.findProjects(request.getRoles());
+                Set<Project> projects = new ProjectServiceImpl().findProjects(request.getRoles());
 
 
                 User user = new User();
                 user.setUsername(request.getUsername());
                 user.setPassword(passwordEncoder().encode(request.getPassword()));
                 user.setEnabled(true);
+                user.setStatus(GeneralStatusEnum.ACTIVE);
                 user.setRoles(roles);
                 user.setProjects(projects);
                 user = userRepository.save(user);
@@ -127,7 +166,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
     public UserResponse activate(HttpServletRequest httpServletRequest, long userId) {
         //todo: find if user exists
         log.info("UserServiceImpl   create method");
-        AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl().authorizeRequestPermissions(httpServletRequest, getPermission());
+        AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
 
             User user = userRepository.findById(userId).orElseThrow(() -> new CustomNotFoundException("Project Resource not found"));
@@ -149,7 +188,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
     public UserResponse deactivate(HttpServletRequest httpServletRequest, long userId) {
         //todo: find if user exists
         log.info("UserServiceImpl   create method");
-        AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl(). authorizeRequestPermissions(httpServletRequest, getPermission());
+        AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
 
             User user = userRepository.findById(userId).orElseThrow(() -> new CustomNotFoundException("Project Resource not found"));
@@ -177,8 +216,43 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(entity.getId());
         userResponse.setUsername(entity.getUsername());
-        userResponse.setRoles(entity.getRoles().stream().map(x -> roleService.populate(x)).collect(Collectors.toList()));
+
+        if(entity.getRoles() != null)
+            userResponse.setRoles(entity.getRoles().stream().map(x -> roleService.populate(x)).collect(Collectors.toList()));
+
+        if(entity.getProjects() != null)
+            userResponse.setProjects(entity.getProjects().stream().map(x -> projectService.populate(x)).collect(Collectors.toList()));
+
         return userResponse;
     }
+
+
+    private AuthResponse populateAuthResponse(CustomUserDetails user) {
+
+        String token = JwtUtils.generateToken(user);
+        String refreshToken = JwtUtils.refreshJwtToken(token);
+
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUsername(user.getUsername());
+
+        userResponse.setRoles(
+                user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())
+
+        );
+
+
+        AuthResponse response = new AuthResponse();
+        response.setMessage(Constants.SUCCESSFUL_LOGIN_MSG);
+        response.setSuccess(user.isEnabled());
+        response.setAuthToken(token);
+        response.setRefreshToken(refreshToken);
+        response.setUser(userResponse);
+
+        return response;
+    }
+
+
+
 
 }
