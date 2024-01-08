@@ -8,11 +8,13 @@ import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
 import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
+import com.kodeinc.authservice.models.entities.Project;
 import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.User;
 import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.UserRepository;
+import com.kodeinc.authservice.services.ProjectService;
 import com.kodeinc.authservice.services.RoleService;
 import com.kodeinc.authservice.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +54,10 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private ProjectService projectService;
+
+
 
     // Development..
     public UserDetails findUserByEmail(String username) {
@@ -85,23 +91,21 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         AuthorizeRequestResponse authenticatedPermission = new BaseServiceImpl(). authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
             {
-                //todo: va;idate permissions, validate user should not exist. and them create
                 Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
                 if (optionalUser.isPresent()) {
-                    //todo: thinking point, user vs multiple projects
                     throw new CustomBadRequestException("Username already exists in the database");
                 }
 
-                //todo: get Existing Roles..
                 Set<Role> roles = roleService.findRoles(request.getRoles());
+                Set<Project> projects = projectService.findProjects(request.getRoles());
 
-                //todo: setup the user with known roles and permissions
 
                 User user = new User();
                 user.setUsername(request.getUsername());
                 user.setPassword(passwordEncoder().encode(request.getPassword()));
                 user.setEnabled(true);
                 user.setRoles(roles);
+                user.setProjects(projects);
                 user = userRepository.save(user);
                 return populate(user);
 

@@ -7,6 +7,7 @@ import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.models.entities.Project;
+import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
 import com.kodeinc.authservice.repositories.ProjectRepository;
 import com.kodeinc.authservice.services.ProjectService;
@@ -20,9 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -199,6 +198,14 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
             throw new KhoodiUnAuthroizedException("You dont have permission to view");
 
     }
+
+    @Override
+    public Set<Project> findProjects(List<Long> projectIds){
+        log.info("Find Projects Method");
+        return new HashSet<>(repository.findAllById(projectIds));
+    }
+
+
 
     private static CustomPage<ProjectResponseDTO> getCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
         CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();

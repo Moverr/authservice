@@ -4,7 +4,11 @@ import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
+import com.kodeinc.authservice.models.entities.Project;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Muyinda Rogers
@@ -19,5 +23,6 @@ public interface ProjectService {
 
     CustomPage<ProjectResponseDTO> list(HttpServletRequest httpServletRequest, SearchRequest query);
     void  delete(HttpServletRequest httpServletRequest,long id);
+    Set<Project> findProjects(List<Long> projectIds);
 }
 
