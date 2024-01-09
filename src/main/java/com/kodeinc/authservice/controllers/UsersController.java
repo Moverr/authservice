@@ -4,6 +4,7 @@ import com.kodeinc.authservice.models.dtos.requests.UserRequest;
 import com.kodeinc.authservice.models.dtos.requests.UsersSearchQuery;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
+import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import com.kodeinc.authservice.models.entities.entityenums.QueryLevelEnum;
 import com.kodeinc.authservice.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,11 +67,12 @@ public class UsersController extends BaseController<UserResponse>{
             @RequestParam(value="sort_by",defaultValue = "id") String sortBy,
             @RequestParam(value="sort_type",defaultValue = "asc") String sortType,
             @RequestParam(value="level",defaultValue = "ALL") QueryLevelEnum level,
-            @RequestParam(value="level_id",defaultValue = "0")  int leveId
+            @RequestParam(value="level_id",defaultValue = "0")  int leveId,
+            @RequestParam(value="status",defaultValue = "active") GeneralStatusEnum status
 
 
     ){
-        UsersSearchQuery request = new UsersSearchQuery(query,offset,limit,sortBy,sortType,level,leveId);
+        UsersSearchQuery request = new UsersSearchQuery(query,offset,limit,sortBy,sortType,level,leveId,status);
         return ResponseEntity.ok(service.list(httpServletRequest,request));
     }
 

@@ -191,17 +191,17 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
     /**
      * @param httpServletRequest
-     * @param query
+     * @param queryRequest
      * @return
      */
     @Override
-    public CustomPage<UserResponse> list(HttpServletRequest httpServletRequest, UsersSearchQuery query) {
+    public CustomPage<UserResponse> list(HttpServletRequest httpServletRequest, UsersSearchQuery queryRequest) {
 
         log.info("UserServiceImpl   create method");
         AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
         if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getResource().equalsIgnoreCase("USERS")) ){
 
-            Sort sort = switch (query.getSortBy()) {
+            Sort sort = switch (queryRequest.getSortBy()) {
                 case "username" -> Sort.by("username");
                 case "id" -> Sort.by("id");
                 case "created_at" -> Sort.by("created_at");
@@ -209,24 +209,26 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
                 default -> Sort.by("id");
             };
 
-            sort = switch (query.getSortType()) {
+            sort = switch (queryRequest.getSortType()) {
                 case "asc" -> sort.ascending();
                 default -> sort.descending();
             };
 
+            Pageable pageable = PageRequest.of(queryRequest.getOffset(), queryRequest.getLimit(), sort);
+
+
             final   List<User> users;
-            switch (query.getLevel()){
+            switch (queryRequest.getLevel()){
                 case ROLE ->
-                     users =  userRepository.findUsersByRole(query.getQuery(),query.getLevelId(),query.getOffset(),query.getLimit());
+                     users =  userRepository.findUsersRole(queryRequest.getLevelId(),queryRequest.getStatus(),pageable);
                 case PROJECT ->
-                        users =  userRepository.findUsersByProject(query.getQuery(),query.getLevelId(),query.getOffset(),query.getLimit());
+                        users =  userRepository.findUsersProject(queryRequest.getLevelId(),queryRequest.getStatus(),pageable);
                 default ->
-                        users =  userRepository.findUsers(query.getQuery(),query.getOffset(),query.getLimit());
+                        users =  userRepository.findUsers(queryRequest.getStatus(),pageable);
             }
             long totalRecords = userRepository.count();
 
             List<UserResponse> responses = users.stream().map(this::populate).collect(Collectors.toList());
-            Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
             Page<UserResponse> pageResult = new PageImpl<>(responses, pageable, totalRecords);
 
             return getCustomPage(pageResult, responses);

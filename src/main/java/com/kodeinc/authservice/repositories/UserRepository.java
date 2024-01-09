@@ -1,6 +1,8 @@
 package com.kodeinc.authservice.repositories;
 
 import com.kodeinc.authservice.models.entities.User;
+import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,17 +24,19 @@ public interface UserRepository extends JpaRepository<User,Long> {
     long count();
 
     @Transactional(readOnly = true)
-    @Query("SELECT U FROM users U  JOIN u.roles R JOIN u.projects  P   OFFSET :offset LIMIT :limit ")
-    List<User> findUsers(@Param("query") String query, @Param("offset") long offset, @Param("limit") long limit);
+    @Query("SELECT U FROM User U where U.status like :status  ")
+    List<User> findUsers( @Param("status") GeneralStatusEnum status, Pageable pageable );
 
 
-    @Transactional(readOnly = true)
-    @Query("SELECT U FROM users U  JOIN u.roles R JOIN u.projects  P where  R.id = :roleID OFFSET :offset LIMIT :limit ")
-    List<User> findUsersByRole(@Param("query") String query,@Param("roleID") long roleId, @Param("offset") long offset, @Param("limit") long limit);
 
     @Transactional(readOnly = true)
-    @Query("SELECT U FROM users U  JOIN u.roles R JOIN u.projects  P where  P.id = :roleID OFFSET :offset LIMIT :limit ")
-    List<User> findUsersByProject(@Param("query") String query,@Param("roleID") long roleId, @Param("offset") long offset, @Param("limit") long limit);
+    @Query("SELECT U FROM User U  JOIN U.roles R   where U.status like :status  AND  R.id = :roleID   ")
+    List<User> findUsersRole(@Param("roleID") long roleID, @Param("status") GeneralStatusEnum status, Pageable pageable );
+
+    @Transactional(readOnly = true)
+    @Query("SELECT U FROM User U   JOIN U.projects  P where U.status like :status  AND  P.id = :projectID ")
+    List<User> findUsersProject(@Param("projectID") long projectID, @Param("status") GeneralStatusEnum status, Pageable pageable );
+
 
 
 }

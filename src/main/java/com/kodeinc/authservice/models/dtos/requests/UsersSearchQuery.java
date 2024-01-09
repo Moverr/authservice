@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.models.dtos.requests;
 
+import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import com.kodeinc.authservice.models.entities.entityenums.QueryLevelEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,10 +17,12 @@ public class UsersSearchQuery extends SearchRequest{
 
     private QueryLevelEnum level;
     private long levelId;
-    public UsersSearchQuery(String query, int offset, int limit, String sortBy, String sortType, QueryLevelEnum level,long levelId) {
+    private GeneralStatusEnum status;
+    public UsersSearchQuery(String query, int offset, int limit, String sortBy, String sortType, QueryLevelEnum level,long levelId, GeneralStatusEnum status) {
         super(query, offset, limit, sortBy, sortType);
         this.level = level;
         this.levelId = levelId;
+        this.status = status;
     }
 
 
