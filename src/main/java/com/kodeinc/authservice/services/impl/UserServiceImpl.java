@@ -120,18 +120,19 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
                 }
 
                 Set<Role> roles = request.getRoles() == null ? null : new HashSet<>(roleRepository.findAllById(request.getRoles()));
-                Set<Project> projects =  request.getProjects() == null ? null : new HashSet<>(projectRepository.findAllById(request.getRoles()));
+                Set<Project> projects =  request.getProjects() == null ? null : new HashSet<>(projectRepository.findAllById(request.getProjects()));
 
 
-                User user = new User();
-                user.setUsername(request.getUsername());
-                user.setPassword(passwordEncoder().encode(request.getPassword()));
-                user.setEnabled(true);
-                user.setStatus(GeneralStatusEnum.ACTIVE);
-                user.setRoles(roles);
-                user.setProjects(projects);
-                user = userRepository.save(user);
-                return populate(user);
+               final  User userEntity = new User();
+                userEntity.setUsername(request.getUsername());
+                userEntity.setPassword(passwordEncoder().encode(request.getPassword()));
+                userEntity.setEnabled(true);
+                userEntity.setStatus(GeneralStatusEnum.ACTIVE);
+                userEntity.setRoles(roles);
+                userEntity.setProjects(projects);
+
+                final User createdUser = userRepository.save(userEntity);
+                return populate(createdUser);
 
             }
 
@@ -201,6 +202,8 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(entity.getId());
         userResponse.setUsername(entity.getUsername());
+        userResponse.setActive(entity.getStatus().equals(GeneralStatusEnum.ACTIVE));
+        userResponse.setStatus(entity.getStatus());
 
         if(entity.getRoles() != null)
             userResponse.setRoles(entity.getRoles().stream().map(this::populate).collect(Collectors.toList()));

@@ -8,8 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public  interface UsersService {
      UserResponse create(HttpServletRequest httpServletRequest, UserRequest request);
 
-
-     //todo:
+     //todo: list users [all, by project, by role]
      UserResponse activate(HttpServletRequest httpServletRequest,long userId);
 
      UserResponse deactivate(HttpServletRequest httpServletRequest, long userId);
