@@ -24,18 +24,18 @@ public interface UserRepository extends JpaRepository<User,Long> {
     long count();
 
     @Transactional(readOnly = true)
-    @Query("SELECT U FROM User U where U.status like :status  ")
-    List<User> findUsers( @Param("status") String status, Pageable pageable );
+    @Query("SELECT U FROM User U where U.status = :status  ")
+    List<User> findUsers( @Param("status") GeneralStatusEnum status, Pageable pageable );
 
 
 
     @Transactional(readOnly = true)
-    @Query("SELECT U FROM User U  JOIN U.roles R   where U.status like :status  AND  R.id = :roleID   ")
-    List<User> findUsersRole(@Param("roleID") long roleID, @Param("status") String status, Pageable pageable );
+    @Query("SELECT U FROM User U  JOIN U.roles R   where U.status = :status  AND  R.id = :roleID   ")
+    List<User> findUsersRole(@Param("roleID") long roleID, @Param("status") GeneralStatusEnum status, Pageable pageable );
 
     @Transactional(readOnly = true)
-    @Query("SELECT U FROM User U   JOIN U.projects  P where U.status like :status  AND  P.id = :projectID ")
-    List<User> findUsersProject(@Param("projectID") long projectID, @Param("status") String status, Pageable pageable );
+    @Query("SELECT U FROM User U   JOIN U.projects  P where U.status = :status  AND  P.id = :projectID ")
+    List<User> findUsersProject(@Param("projectID") long projectID, @Param("status") GeneralStatusEnum status, Pageable pageable );
 
 
 
