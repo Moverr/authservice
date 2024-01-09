@@ -220,11 +220,11 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
             final   List<User> users;
             switch (queryRequest.getLevel()){
                 case ROLE ->
-                     users =  userRepository.findUsersRole(queryRequest.getLevelId(),queryRequest.getStatus(),pageable);
+                     users =  userRepository.findUsersRole(queryRequest.getLevelId(),queryRequest.getStatus().name(),pageable);
                 case PROJECT ->
-                        users =  userRepository.findUsersProject(queryRequest.getLevelId(),queryRequest.getStatus(),pageable);
+                        users =  userRepository.findUsersProject(queryRequest.getLevelId(),queryRequest.getStatus().name(),pageable);
                 default ->
-                        users =  userRepository.findUsers(queryRequest.getStatus(),pageable);
+                        users =  userRepository.findUsers(queryRequest.getStatus().name(),pageable);
             }
             long totalRecords = userRepository.count();
 
