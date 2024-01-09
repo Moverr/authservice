@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -39,10 +38,6 @@ import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
 public class UserServiceImpl  implements UsersService, UserDetailsService {
     @Autowired
     private ProjectRepository projectRepository;
-
-    static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    static String hashedPassword = passwordEncoder.encode("password");
-
 
     @Autowired
     private UserRepository userRepository;
