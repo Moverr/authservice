@@ -209,15 +209,8 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     }
 
 
-    private static CustomPage<PermissionResponse> getCustomPage(Page<Permission> projectResources, List<PermissionResponse> responses) {
-        CustomPage<PermissionResponse> customResponse = new CustomPage<>();
-        customResponse.setData(responses);
-        customResponse.setPageNumber(projectResources.getNumber());
-        customResponse.setPageSize(projectResources.getSize());
-        customResponse.setPageNumber(projectResources.getNumber());
-        customResponse.setTotalElements(projectResources.getTotalElements());
-        return customResponse;
-    }
+
+
 
 
 

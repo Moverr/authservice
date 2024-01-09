@@ -6,6 +6,7 @@ import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.BaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -73,6 +74,16 @@ public class BaseServiceImpl implements BaseService {
 
     }
 
+
+    protected static <T, R> CustomPage<R> getCustomPage(Page<T> pageData, List<R> listData) {
+        CustomPage<R> customResponse = new CustomPage<>();
+        customResponse.setData(listData);
+        customResponse.setPageNumber(pageData.getNumber());
+        customResponse.setPageSize(pageData.getSize());
+        customResponse.setPageNumber(pageData.getNumber());
+        customResponse.setTotalElements(pageData.getTotalElements());
+        return customResponse;
+    }
 
 
 }

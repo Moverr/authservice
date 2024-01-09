@@ -1,7 +1,10 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.models.dtos.requests.UserRequest;
+import com.kodeinc.authservice.models.dtos.requests.UsersSearchQuery;
+import com.kodeinc.authservice.models.dtos.responses.CustomPage;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
+import com.kodeinc.authservice.models.entities.entityenums.QueryLevelEnum;
 import com.kodeinc.authservice.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -51,5 +54,26 @@ public class UsersController extends BaseController<UserResponse>{
     ){
         return  ResponseEntity.ok(service.deactivate(httpServletRequest,id));
     }
+
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CustomPage<UserResponse>>  getList(
+            HttpServletRequest httpServletRequest,
+
+            @RequestParam(value="query",required = false) String query,
+            @RequestParam(value="offset",defaultValue = "0")  int offset,
+            @RequestParam(value="limit",defaultValue = "20")    int limit,
+            @RequestParam(value="sort_by",defaultValue = "id") String sortBy,
+            @RequestParam(value="sort_type",defaultValue = "asc") String sortType,
+            @RequestParam(value="level",defaultValue = "ALL") QueryLevelEnum level,
+            @RequestParam(value="level_id",defaultValue = "0")  int leveId
+
+
+    ){
+        UsersSearchQuery request = new UsersSearchQuery(query,offset,limit,sortBy,sortType,level,leveId);
+        return ResponseEntity.ok(service.list(httpServletRequest,request));
+    }
+
+
 
 }

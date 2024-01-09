@@ -216,15 +216,6 @@ public class ProjectResourceServiceImpl extends BaseServiceImpl implements Proje
 
     }
 
-    private static CustomPage<ProjectResourceResponse> getCustomPage(Page<ProjectResource> projectResources, List<ProjectResourceResponse> responses) {
-        CustomPage<ProjectResourceResponse> customResponse = new CustomPage<>();
-        customResponse.setData(responses);
-        customResponse.setPageNumber(projectResources.getNumber());
-        customResponse.setPageSize(projectResources.getSize());
-        customResponse.setPageNumber(projectResources.getNumber());
-        customResponse.setTotalElements(projectResources.getTotalElements());
-        return customResponse;
-    }
 
     private static List<PermissionResponse> getPermission() {
         List<PermissionResponse> expectedPermissions = new ArrayList<>();

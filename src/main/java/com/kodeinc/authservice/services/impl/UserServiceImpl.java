@@ -6,6 +6,7 @@ import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.UserRequest;
+import com.kodeinc.authservice.models.dtos.requests.UsersSearchQuery;
 import com.kodeinc.authservice.models.dtos.responses.*;
 import com.kodeinc.authservice.models.entities.*;
 import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
@@ -17,6 +18,7 @@ import com.kodeinc.authservice.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
+import static com.kodeinc.authservice.services.impl.BaseServiceImpl.getCustomPage;
 
 /**
  * @author Muyinda Rogers
@@ -185,6 +188,53 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         } else
             throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
     }
+
+    /**
+     * @param httpServletRequest
+     * @param query
+     * @return
+     */
+    @Override
+    public CustomPage<UserResponse> list(HttpServletRequest httpServletRequest, UsersSearchQuery query) {
+
+        log.info("UserServiceImpl   create method");
+        AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getResource().equalsIgnoreCase("USERS")) ){
+
+            Sort sort = switch (query.getSortBy()) {
+                case "username" -> Sort.by("username");
+                case "id" -> Sort.by("id");
+                case "created_at" -> Sort.by("created_at");
+                case "updated_at" -> Sort.by("updated_at");
+                default -> Sort.by("id");
+            };
+
+            sort = switch (query.getSortType()) {
+                case "asc" -> sort.ascending();
+                default -> sort.descending();
+            };
+
+            final   List<User> users;
+            switch (query.getLevel()){
+                case ROLE ->
+                     users =  userRepository.findUsersByRole(query.getQuery(),query.getLevelId(),query.getOffset(),query.getLimit());
+                case PROJECT ->
+                        users =  userRepository.findUsersByProject(query.getQuery(),query.getLevelId(),query.getOffset(),query.getLimit());
+                default ->
+                        users =  userRepository.findUsers(query.getQuery(),query.getOffset(),query.getLimit());
+            }
+            long totalRecords = userRepository.count();
+
+            List<UserResponse> responses = users.stream().map(this::populate).collect(Collectors.toList());
+            Pageable pageable = PageRequest.of(query.getOffset(), query.getLimit(), sort);
+            Page<UserResponse> pageResult = new PageImpl<>(responses, pageable, totalRecords);
+
+            return getCustomPage(pageResult, responses);
+        }
+        else
+            throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
+    }
+
 
     private static List<PermissionResponse> getPermission() {
         List<PermissionResponse> expectedPermissions = new ArrayList<>();

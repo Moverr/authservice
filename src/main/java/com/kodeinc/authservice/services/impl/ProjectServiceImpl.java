@@ -207,15 +207,6 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 
 
-    private static CustomPage<ProjectResponse> getCustomPage(Page<Project> projects, List<ProjectResponse> responses) {
-        CustomPage<ProjectResponse> customResponse = new CustomPage<>();
-        customResponse.setData(responses);
-        customResponse.setPageNumber(projects.getNumber());
-        customResponse.setPageSize(projects.getSize());
-        customResponse.setPageNumber(projects.getNumber());
-        customResponse.setTotalElements(projects.getTotalElements());
-        return customResponse;
-    }
 
 
 
