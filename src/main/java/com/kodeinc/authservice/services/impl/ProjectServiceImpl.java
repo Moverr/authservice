@@ -177,7 +177,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
             }
 
-            List<ProjectResponse> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
+            List<ProjectResponse> responses =  projects.stream().map(ProjectServiceImpl::populate).collect(Collectors.toList());
 
             return getCustomPage(projects, responses);
 
@@ -235,7 +235,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
 
     @Override
-    public  Project populate(ProjectRequest request) {
+    public Project populate(ProjectRequest request) {
         Project entity = new Project();
         entity.setCode(request.getCode());
         entity.setName(request.getName());
@@ -244,8 +244,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
 
-    @Override
-    public ProjectResponse populate(Project entity) {
+
+    public static ProjectResponse populate(Project entity) {
         return ProjectResponse
                 .builder()
                 .id(entity.getId())

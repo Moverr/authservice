@@ -25,7 +25,6 @@ public interface ProjectService {
     void  delete(HttpServletRequest httpServletRequest,long id);
     Set<Project> findProjects(List<Long> projectIds);
     Project populate(ProjectRequest request) ;
-    ProjectResponse populate(Project entity);
 
 
 }

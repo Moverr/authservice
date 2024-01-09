@@ -6,19 +6,13 @@ import com.kodeinc.authservice.exceptions.CustomNotFoundException;
 import com.kodeinc.authservice.exceptions.KhoodiUnAuthroizedException;
 import com.kodeinc.authservice.helpers.Constants;
 import com.kodeinc.authservice.models.dtos.requests.UserRequest;
-import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
-import com.kodeinc.authservice.models.dtos.responses.AuthorizeRequestResponse;
-import com.kodeinc.authservice.models.dtos.responses.PermissionResponse;
-import com.kodeinc.authservice.models.dtos.responses.UserResponse;
-import com.kodeinc.authservice.models.entities.CustomUserDetails;
-import com.kodeinc.authservice.models.entities.Project;
-import com.kodeinc.authservice.models.entities.Role;
-import com.kodeinc.authservice.models.entities.User;
+import com.kodeinc.authservice.models.dtos.responses.*;
+import com.kodeinc.authservice.models.entities.*;
 import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import com.kodeinc.authservice.models.entities.entityenums.PermissionLevelEnum;
+import com.kodeinc.authservice.repositories.ProjectRepository;
+import com.kodeinc.authservice.repositories.RoleRepository;
 import com.kodeinc.authservice.repositories.UserRepository;
-import com.kodeinc.authservice.services.ProjectService;
-import com.kodeinc.authservice.services.RoleService;
 import com.kodeinc.authservice.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
@@ -46,6 +37,8 @@ import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
 @Slf4j
 @Service
 public class UserServiceImpl  implements UsersService, UserDetailsService {
+    @Autowired
+    private ProjectRepository projectRepository;
 
     static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     static String hashedPassword = passwordEncoder.encode("password");
@@ -55,10 +48,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private ProjectService projectService;
+    private RoleRepository roleRepository;
 
 
 
@@ -134,8 +124,8 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
                     throw new CustomBadRequestException("Username already exists in the database");
                 }
 
-                Set<Role> roles = roleService.findRoles(request.getRoles());
-                Set<Project> projects = new ProjectServiceImpl().findProjects(request.getRoles());
+                Set<Role> roles = request.getRoles() == null ? null : new HashSet<>(roleRepository.findAllById(request.getRoles()));
+                Set<Project> projects =  request.getProjects() == null ? null : new HashSet<>(projectRepository.findAllById(request.getRoles()));
 
 
                 User user = new User();
@@ -218,15 +208,39 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         userResponse.setUsername(entity.getUsername());
 
         if(entity.getRoles() != null)
-            userResponse.setRoles(entity.getRoles().stream().map(x -> roleService.populate(x)).collect(Collectors.toList()));
+            userResponse.setRoles(entity.getRoles().stream().map(this::populate).collect(Collectors.toList()));
 
         if(entity.getProjects() != null)
-            userResponse.setProjects(entity.getProjects().stream().map(x -> projectService.populate(x)).collect(Collectors.toList()));
+            userResponse.setProjects(entity.getProjects().stream().map(ProjectServiceImpl::populate).collect(Collectors.toList()));
 
         return userResponse;
     }
 
+    public RoleResponse populate(Role entity){
+        RoleResponse roleResponse = new RoleResponse();
+        roleResponse.setName(entity.getName());
+        roleResponse.setPermissions(entity.getPermissions().stream().map(this::populate).collect(Collectors.toList()));
 
+        return  roleResponse;
+    }
+
+
+
+    public PermissionResponse populate(Permission entity){
+
+        PermissionResponse permissionResponse = new PermissionResponse();
+        if(entity.getResource() != null)
+            permissionResponse.setResource(entity.getResource().getName());
+        permissionResponse.setRead(entity.getRead());
+        permissionResponse.setCreate(entity.getCreate());
+        permissionResponse.setUpdate(entity.getUpdate());
+        permissionResponse.setDelete(entity.getDelete());
+        if(entity.getResource() != null)
+            permissionResponse.setResource(entity.getResource().getName());
+
+
+        return  permissionResponse;
+    }
     private AuthResponse populateAuthResponse(CustomUserDetails user) {
 
         String token = JwtUtils.generateToken(user);
@@ -237,7 +251,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         userResponse.setUsername(user.getUsername());
 
         userResponse.setRoles(
-                user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())
+                user.getCustomRoles().stream().map(this::populate).collect(Collectors.toList())
 
         );
 
