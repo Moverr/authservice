@@ -6,5 +6,18 @@ package com.kodeinc.authservice.models.entities.entityenums;
  * @Email moverr@gmail.com
  */
 public enum QueryLevelEnum {
-    ALL,ROLE,PROJECT,RESOURCE
+    ALL,ROLE,PROJECT,RESOURCE;
+
+    public static QueryLevelEnum findValue(String value){
+
+        for (QueryLevelEnum enumValue : QueryLevelEnum.values()) {
+            if (enumValue.name().equalsIgnoreCase(value)) {
+                return enumValue;
+            }
+        }
+
+        return QueryLevelEnum.ALL;
+    }
+
+
 }

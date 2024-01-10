@@ -66,16 +66,15 @@ public class UsersController extends BaseController<UserResponse>{
             @RequestParam(value="limit",defaultValue = "20")    int limit,
             @RequestParam(value="sort_by",defaultValue = "id") String sortBy,
             @RequestParam(value="sort_type",defaultValue = "asc") String sortType,
-            @RequestParam(value="level",defaultValue = "ALL") QueryLevelEnum level,
+            @RequestParam(value="level",defaultValue = "ALL") String level,
             @RequestParam(value="level_id",defaultValue = "0")  int leveId,
-            @RequestParam(value="status",defaultValue = "ACTIVE") GeneralStatusEnum status
-
-
+            @RequestParam(value="status",defaultValue = "ACTIVE") String status
     ){
-        UsersSearchQuery request = new UsersSearchQuery(query,offset,limit,sortBy,sortType,level,leveId, status);
+        GeneralStatusEnum statusEnum = GeneralStatusEnum.findValue(status);
+        QueryLevelEnum levelEnum = QueryLevelEnum.findValue(level);
+        UsersSearchQuery request = new UsersSearchQuery(query,offset,limit,sortBy,sortType,levelEnum,leveId, statusEnum);
         return ResponseEntity.ok(service.list(httpServletRequest,request));
     }
-
 
 
 }

@@ -166,8 +166,11 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
         } else
             throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
 
-
     }
+
+    //todo: update Password:
+
+    //todo: getByID
 
     /**
      * @param httpServletRequest

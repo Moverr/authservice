@@ -9,5 +9,16 @@ public enum GeneralStatusEnum {
     PENDING,
     ACTIVE,
     DEACTIVE,
-    ARCHIVED
+    ARCHIVED;
+
+    public static GeneralStatusEnum findValue(String value){
+
+        for (GeneralStatusEnum enumValue : GeneralStatusEnum.values()) {
+            if (enumValue.name().equalsIgnoreCase(value)) {
+                return enumValue;
+            }
+        }
+
+        return GeneralStatusEnum.ACTIVE;
+    }
 }
