@@ -16,6 +16,7 @@ import com.kodeinc.authservice.repositories.RoleRepository;
 import com.kodeinc.authservice.repositories.UserRepository;
 import com.kodeinc.authservice.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -51,7 +52,6 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
 
 
-    // Development..
     public UserDetails findUserByEmail(String username) {
         return this.loadUserByUsername(username);
     }
@@ -147,6 +147,35 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
 
 
+
+    public UserResponse findUserById(HttpServletRequest httpServletRequest,  long userId) {
+        log.info("UserServiceImpl   Find User method");
+        AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+            User user =  userRepository.findById(userId).orElseThrow(()->new CustomNotFoundException("User not found"));
+            return populate(user);
+        }
+        else
+            throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
+
+    }
+
+    public UserResponse updatePassword(HttpServletRequest httpServletRequest,  long userId, @NotNull String newPassword) {
+        log.info("UserServiceImpl   Update Password  method");
+        AuthorizeRequestResponse authenticatedPermission = authenticate(httpServletRequest, getPermission());
+        if (authenticatedPermission.getPermission() != null && (authenticatedPermission.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authenticatedPermission.getPermission().getCreate().equals(PermissionLevelEnum.FULL))) {
+            User user =  userRepository.findById(userId).orElseThrow(()->new CustomNotFoundException("User not found"));
+            user.setPassword(passwordEncoder().encode(newPassword));
+            User newUSer = userRepository.save(user);
+            return populate(newUSer);
+        }
+        else
+            throw new KhoodiUnAuthroizedException("You dont have permission to manage users");
+
+    }
+
+
+
     /**
      * @param httpServletRequest
      * @return
@@ -168,9 +197,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
     }
 
-    //todo: update Password:
 
-    //todo: getByID
 
     /**
      * @param httpServletRequest
