@@ -17,8 +17,8 @@ public class ErrorResponseDTO {
     private int code;
     private String status;
     private String message;
-//    private String stackTrace;
-//    private Object data;
+    private String stackTrace;
+    private Object data;
 
 
     @Override

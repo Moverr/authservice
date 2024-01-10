@@ -8,5 +8,17 @@ package com.kodeinc.authservice.models.entities.entityenums;
 public enum GeneralStatusEnum {
     PENDING,
     ACTIVE,
-    ARCHIVED
+    DEACTIVE,
+    ARCHIVED;
+
+    public static GeneralStatusEnum findValue(String value){
+
+        for (GeneralStatusEnum enumValue : GeneralStatusEnum.values()) {
+            if (enumValue.name().equalsIgnoreCase(value)) {
+                return enumValue;
+            }
+        }
+
+        return GeneralStatusEnum.ACTIVE;
+    }
 }

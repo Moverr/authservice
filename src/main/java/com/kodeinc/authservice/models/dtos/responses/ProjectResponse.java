@@ -5,12 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
-public class ProjectResponseDTO {
+public class ProjectResponse {
     private   long id;
     @JsonProperty("name")
     private String name;

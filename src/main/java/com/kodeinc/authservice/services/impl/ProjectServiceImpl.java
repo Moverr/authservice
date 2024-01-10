@@ -20,9 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,7 +34,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     @Transactional
     @Override
-    public ProjectResponseDTO create(HttpServletRequest httpServletRequest, ProjectRequest request) throws CustomBadRequestException {
+    public ProjectResponse create(HttpServletRequest httpServletRequest, ProjectRequest request) throws CustomBadRequestException {
         log.info("ProjectServiceImpl   create method");
 
         //todo: validate user access
@@ -58,7 +56,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     @Transactional
     @Override
-    public ProjectResponseDTO update(HttpServletRequest httpServletRequest, long id, ProjectRequest request) {
+    public ProjectResponse update(HttpServletRequest httpServletRequest, long id, ProjectRequest request) {
         Optional<Project> optionalProject = repository.findById(id);
         if (optionalProject.isEmpty()) {
             throw new CustomNotFoundException("Record does not exist");
@@ -105,7 +103,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
     @Override
-    public ProjectResponseDTO getByID(HttpServletRequest httpServletRequest, long id) {
+    public ProjectResponse getByID(HttpServletRequest httpServletRequest, long id) {
         AuthorizeRequestResponse authResponse = authorizeRequestPermissions(httpServletRequest, getPermission());
         if (authResponse.getPermission() != null && (authResponse.getPermission().getResource().equalsIgnoreCase("ALL_FUNCTIONS") || authResponse.getPermission().getRead()!= (PermissionLevelEnum.NONE))) {
             Optional<Project> optionalProject = repository.findById(id);
@@ -144,7 +142,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
     @Override
-    public CustomPage<ProjectResponseDTO> list(HttpServletRequest httpServletRequest, SearchRequest query) {
+    public CustomPage<ProjectResponse> list(HttpServletRequest httpServletRequest, SearchRequest query) {
         Sort sort = switch (query.getSortBy()) {
             case "code" -> Sort.by("code");
             default -> Sort.by("name");
@@ -179,7 +177,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
             }
 
-            List<ProjectResponseDTO> responses =  projects.stream().map(this::populate).collect(Collectors.toList());
+            List<ProjectResponse> responses =  projects.stream().map(ProjectServiceImpl::populate).collect(Collectors.toList());
 
             return getCustomPage(projects, responses);
 
@@ -200,15 +198,15 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
 
     }
 
-    private static CustomPage<ProjectResponseDTO> getCustomPage(Page<Project> projects, List<ProjectResponseDTO> responses) {
-        CustomPage<ProjectResponseDTO> customResponse = new CustomPage<>();
-        customResponse.setData(responses);
-        customResponse.setPageNumber(projects.getNumber());
-        customResponse.setPageSize(projects.getSize());
-        customResponse.setPageNumber(projects.getNumber());
-        customResponse.setTotalElements(projects.getTotalElements());
-        return customResponse;
+    @Override
+    public Set<Project> findProjects(List<Long> projectIds){
+        log.info("Find Projects Method");
+        return projectIds ==  null ? null :
+         new HashSet<>(repository.findAllById(projectIds));
     }
+
+
+
 
 
 
@@ -227,7 +225,8 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
 
-    private Project populate(ProjectRequest request) {
+    @Override
+    public Project populate(ProjectRequest request) {
         Project entity = new Project();
         entity.setCode(request.getCode());
         entity.setName(request.getName());
@@ -236,8 +235,9 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
     }
 
 
-    private ProjectResponseDTO populate(Project entity) {
-        return ProjectResponseDTO
+
+    public static ProjectResponse populate(Project entity) {
+        return ProjectResponse
                 .builder()
                 .id(entity.getId())
                 .name(entity.getName())

@@ -3,7 +3,7 @@ package com.kodeinc.authservice.controllers;
 import com.kodeinc.authservice.models.dtos.requests.ProjectRequest;
 import com.kodeinc.authservice.models.dtos.requests.SearchRequest;
 import com.kodeinc.authservice.models.dtos.responses.CustomPage;
-import com.kodeinc.authservice.models.dtos.responses.ProjectResponseDTO;
+import com.kodeinc.authservice.models.dtos.responses.ProjectResponse;
 import com.kodeinc.authservice.services.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/v1/projects")
 @Validated
-public class ProjectsController  extends BaseController<ProjectResponseDTO>{
+public class ProjectsController  extends BaseController<ProjectResponse>{
 
 
     @Autowired
@@ -27,14 +27,14 @@ public class ProjectsController  extends BaseController<ProjectResponseDTO>{
 
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> create(
+    public ResponseEntity<ProjectResponse> create(
             HttpServletRequest httpServletRequest,
             @RequestBody @Valid ProjectRequest request){
         return  ResponseEntity.ok(service.create(httpServletRequest,request));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomPage<ProjectResponseDTO>>  getList(
+    public ResponseEntity<CustomPage<ProjectResponse>>  getList(
             HttpServletRequest httpServletRequest,
            @RequestParam(value="query",required = false) String query,
            @RequestParam(value="offset",defaultValue = "0")  int offset,
@@ -47,13 +47,13 @@ public class ProjectsController  extends BaseController<ProjectResponseDTO>{
     }
 
     @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> getById( HttpServletRequest httpServletRequest,@PathVariable(value = "id") long id){
+    public ResponseEntity<ProjectResponse> getById(HttpServletRequest httpServletRequest, @PathVariable(value = "id") long id){
         return  ResponseEntity.ok(service.getByID(httpServletRequest,id));
     }
 
 
     @PutMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponseDTO> update( HttpServletRequest httpServletRequest,@PathVariable(value = "id") long id,@RequestBody ProjectRequest request){
+    public ResponseEntity<ProjectResponse> update(HttpServletRequest httpServletRequest, @PathVariable(value = "id") long id, @RequestBody ProjectRequest request){
         return  ResponseEntity.ok(service.update(httpServletRequest,id,request));
     }
 

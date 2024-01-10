@@ -21,4 +21,7 @@ public class UserRequest {
     private String password;
     @JsonProperty("roles")
     private List<Long> roles;
+
+    @JsonProperty("projects")
+    private List<Long> projects;
 }
