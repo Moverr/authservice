@@ -38,30 +38,18 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation "org.springframework.boot:spring-boot-starter-jdbc"
 	implementation "org.springframework.data:spring-data-jpa:3.1.0"
-	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation "org.hibernate:hibernate-core:6.1.7.Final"
 	implementation "com.zaxxer:HikariCP:5.0.1"
-	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4"
 	implementation "org.springframework.boot:spring-boot-starter-actuator:3.1.0"
 	implementation "io.jsonwebtoken:jjwt-api:0.11.5"
-    implementation 'org.jetbrains:annotations:24.0.0'
-	runtimeOnly "io.jsonwebtoken:jjwt-impl:0.11.5"
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation "org.jetbrains:annotations:24.0.0"
+	implementation "io.jsonwebtoken:jjwt-jackson:0.11.5"
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0"
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0"
 
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
-
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-
-
-
-	compileOnly "org.projectlombok:lombok"
-	runtimeOnly "com.h2database:h2"
-	runtimeOnly "org.postgresql:postgresql"
-	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-	annotationProcessor "org.projectlombok:lombok"
 
 	testImplementation "org.springframework.boot:spring-boot-starter-test"
 	testImplementation "org.junit.jupiter:junit-jupiter"
@@ -72,6 +60,15 @@ dependencies {
 	testImplementation "org.junit.platform:junit-platform-launcher"
 	testImplementation "org.springframework.boot:spring-boot-starter-test"
 	testImplementation "org.mockito:mockito-inline:5.2.0"
+
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+	annotationProcessor "org.projectlombok:lombok"
+
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:0.11.5"
+	runtimeOnly "com.h2database:h2"
+	runtimeOnly "org.postgresql:postgresql"
+
+	compileOnly "org.projectlombok:lombok"
 
 
 
@@ -120,3 +117,19 @@ task migrate() {
 		println("Generated File with name -> V${project.fileVersion}_${new SimpleDateFormat('ddMMyyyyHHmmss').format(new Date())}__${project.fileName}")
 	}
 }
+
+task runJar(type: JavaExec) {
+	dependsOn jar
+	classpath = files("build/libs/auth-v1.0.0-alpha.jar")
+}
+
+
+
+tasks.named("bootJar") {
+	archiveClassifier = 'boot'
+}
+
+tasks.named("jar") {
+	archiveClassifier = ''
+}
+
