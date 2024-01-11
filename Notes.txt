@@ -1,0 +1,2 @@
+scp -i "new-vision-key-pair.pem"  build/libs/Dockerfile  ec2-user@ec2-52-207-255-31.compute-1.amazonaws.com:~/
+
