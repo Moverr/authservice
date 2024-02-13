@@ -1,6 +1,6 @@
 package com.kodeinc.authservice.configs.security;
 
-import com.kodeinc.authservice.services.impl.UserServiceImpl;
+import com.kodeinc.authservice.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
 
     @Autowired
-    private UserServiceImpl _userDetailService;
+    private UsersService _userDetailService;
     @Override
 
     protected void additionalAuthenticationChecks(UserDetails userDetails,

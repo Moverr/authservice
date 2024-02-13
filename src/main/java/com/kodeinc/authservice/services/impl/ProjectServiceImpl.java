@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ProjectServiceImpl extends BaseServiceImpl implements ProjectService {
+class ProjectServiceImpl extends BaseServiceImpl implements ProjectService {
 
 
 

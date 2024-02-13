@@ -18,7 +18,7 @@ import java.util.Optional;
  * @Email moverr@gmail.com
  */
 @Component
-public class BaseServiceImpl implements BaseService {
+ class BaseServiceImpl implements BaseService {
 
     @Autowired
     private AuthService service;

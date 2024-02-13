@@ -39,7 +39,7 @@ import static com.kodeinc.authservice.services.impl.BaseServiceImpl.getCustomPag
 
 @Slf4j
 @Service
-public class UserServiceImpl  implements UsersService, UserDetailsService {
+class UserServiceImpl  implements UsersService, UserDetailsService {
     @Autowired
     private ProjectRepository projectRepository;
 

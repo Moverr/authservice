@@ -88,3 +88,4 @@ application.yml
 /lib/spring-security-web/5.2.1.RELEASE/spring-security-web-5.2.1.RELEASE.jar
 /lib/spring-ws.jar
 /web/WEB-INF/web.xml
+/new-vision-key-pair.pem

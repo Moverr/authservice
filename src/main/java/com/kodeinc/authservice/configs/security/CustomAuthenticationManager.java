@@ -1,6 +1,6 @@
 package com.kodeinc.authservice.configs.security;
 
-import com.kodeinc.authservice.services.impl.UserServiceImpl;
+import com.kodeinc.authservice.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ import static com.kodeinc.authservice.helpers.Utilities.passwordEncoder;
  */
 public class CustomAuthenticationManager implements AuthenticationManager {
     @Autowired
-    private UserServiceImpl userDetailsService;
+    private UsersService userDetailsService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
