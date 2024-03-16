@@ -33,8 +33,6 @@ out/
 /nbdist/
 /.nb-gradle/
 
-application.yml
-
 ### VS Code ###
 .vscode/
 /web/WEB-INF/applicationContext.xml
@@ -89,3 +87,6 @@ application.yml
 /lib/spring-ws.jar
 /web/WEB-INF/web.xml
 /new-vision-key-pair.pem
+
+/src/main/resources/application.yml
+
