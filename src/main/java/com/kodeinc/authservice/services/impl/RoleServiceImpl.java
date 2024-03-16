@@ -11,6 +11,7 @@ import com.kodeinc.authservice.models.entities.Role;
 import com.kodeinc.authservice.repositories.RoleRepository;
 import com.kodeinc.authservice.services.RoleService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
- public class RoleServiceImpl implements RoleService {
+class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RoleRepository roleRepository;
@@ -54,7 +56,9 @@ import java.util.stream.Collectors;
 
     @Override
     public Set<Role> findRoles(List<Long> roleIds){
-        return new HashSet<>(roleRepository.findAllById(roleIds));
+        log.info("Find Roles Method");
+       return  roleIds == null ? null :
+          new HashSet<>(roleRepository.findAllById(roleIds));
     }
 
 

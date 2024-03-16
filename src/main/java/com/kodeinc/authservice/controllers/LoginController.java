@@ -1,7 +1,7 @@
 package com.kodeinc.authservice.controllers;
 
 import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
-import com.kodeinc.authservice.services.impl.AuthServiceImpl;
+import com.kodeinc.authservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class LoginController {
     }
 
     @Autowired
-    private AuthServiceImpl service;
+    private AuthService service;
 
 
     @PostMapping("/login")

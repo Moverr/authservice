@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class PermissionServiceImpl extends BaseServiceImpl implements PermissionService  {
+class PermissionServiceImpl extends BaseServiceImpl implements PermissionService  {
 
     @Autowired
     private  PermissionRepository repository;
@@ -49,6 +50,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
      * @param request
      * @return
      */
+    @Transactional()
     @Override
     public PermissionResponse create(HttpServletRequest httpServletRequest, PermissionRequest request) {
 
@@ -207,15 +209,8 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     }
 
 
-    private static CustomPage<PermissionResponse> getCustomPage(Page<Permission> projectResources, List<PermissionResponse> responses) {
-        CustomPage<PermissionResponse> customResponse = new CustomPage<>();
-        customResponse.setData(responses);
-        customResponse.setPageNumber(projectResources.getNumber());
-        customResponse.setPageSize(projectResources.getSize());
-        customResponse.setPageNumber(projectResources.getNumber());
-        customResponse.setTotalElements(projectResources.getTotalElements());
-        return customResponse;
-    }
+
+
 
 
 

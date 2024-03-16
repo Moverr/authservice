@@ -42,13 +42,22 @@ public class User extends BaseEntity implements UserDetails {
     private Set<Role> roles;
 
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+
+            name = "user_project",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    private Set<Project> projects;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Set<GrantedAuthority> authorities = new HashSet<>(roles.stream().map(x -> new SimpleGrantedAuthority(x.getName())).toList());
-        // Convert roles to GrantedAuthority
-      //  roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+
         roles.forEach(role->role.getPermissions().forEach(permission -> {
             if(permission.getResource() != null )
                 authorities.add(new SimpleGrantedAuthority(permission.getResource().getName()));

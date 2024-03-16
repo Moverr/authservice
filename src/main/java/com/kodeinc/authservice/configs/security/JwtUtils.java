@@ -69,16 +69,7 @@ public class JwtUtils {
                 .compact();
 
 
-        /*
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userDetails.getUsername())
-                .claim("authorities",userDetails.getAuthorities())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
-        */
     }
 
     public static String refreshJwtToken(String token) {
