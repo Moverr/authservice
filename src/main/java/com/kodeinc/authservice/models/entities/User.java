@@ -42,6 +42,8 @@ public class User extends BaseEntity implements UserDetails {
     private Set<Role> roles;
 
 
+    private Boolean accountExpired= true;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
 

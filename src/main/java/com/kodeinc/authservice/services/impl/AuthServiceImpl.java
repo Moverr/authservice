@@ -79,9 +79,10 @@ class AuthServiceImpl implements AuthService {
         String token = JwtUtils.generateToken(user);
         String refreshToken = JwtUtils.refreshJwtToken(token);
 
-
         UserResponse userResponse = new UserResponse();
         userResponse.setUsername(user.getUsername());
+        userResponse.setUserId(user.getUserId());
+        userResponse.setStatus(user.getStatus());
 
         userResponse.setRoles(
                 user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())

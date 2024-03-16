@@ -69,12 +69,16 @@ class UserServiceImpl  implements UsersService, UserDetailsService {
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                true, true, true, user.getAuthorities(), user.getRoles()
+                isAccountExpired(user), true, true, user.getAuthorities(), user.getRoles()
+                ,user.getStatus()
         );
 
 
     }
 
+    private boolean isAccountExpired(User user){
+        return user.getAccountExpired();
+    }
     private  AuthorizeRequestResponse authenticate(HttpServletRequest request, List<PermissionResponse> expectedPermissions) throws KhoodiUnAuthroizedException {
 
         String token = JwtUtils.extractToken(request);
