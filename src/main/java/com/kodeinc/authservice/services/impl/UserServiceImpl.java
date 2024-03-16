@@ -39,9 +39,9 @@ import static com.kodeinc.authservice.services.impl.BaseServiceImpl.getCustomPag
 
 @Slf4j
 @Service
-public class UserServiceImpl  implements UsersService, UserDetailsService {
+class UserServiceImpl  implements UsersService, UserDetailsService {
     @Autowired
-    private ProjectRepository projectRepository;
+    private  ProjectRepository projectRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -69,12 +69,16 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                true, true, true, user.getAuthorities(), user.getRoles()
+                isAccountExpired(user), true, true, user.getAuthorities(), user.getRoles()
+                ,user.getStatus()
         );
 
 
     }
 
+    private boolean isAccountExpired(User user){
+        return true;
+    }
     private  AuthorizeRequestResponse authenticate(HttpServletRequest request, List<PermissionResponse> expectedPermissions) throws KhoodiUnAuthroizedException {
 
         String token = JwtUtils.extractToken(request);
@@ -178,7 +182,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
     /**
      * @param httpServletRequest
-     * @return
+     * @return UserResponse
      */
     @Override
     public UserResponse activate(HttpServletRequest httpServletRequest, long userId) {
@@ -201,7 +205,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
 
     /**
      * @param httpServletRequest
-     * @return
+     * @return UserResponse
      */
     @Override
     public UserResponse deactivate(HttpServletRequest httpServletRequest, long userId) {
@@ -222,7 +226,7 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
     /**
      * @param httpServletRequest
      * @param queryRequest
-     * @return
+     * @return CustomPage<UserResponse>
      */
     @Override
     public CustomPage<UserResponse> list(HttpServletRequest httpServletRequest, UsersSearchQuery queryRequest) {
@@ -239,12 +243,9 @@ public class UserServiceImpl  implements UsersService, UserDetailsService {
                 default -> Sort.by("id");
             };
 
-            sort = switch (queryRequest.getSortType()) {
-                case "asc" -> sort.ascending();
-                default -> sort.descending();
-            };
+            Sort  sortedResult =   (queryRequest.getSortType().equalsIgnoreCase("asc")) ? sort.ascending() :sort.descending();
 
-            Pageable pageable = PageRequest.of(queryRequest.getOffset(), queryRequest.getLimit(), sort);
+            Pageable pageable = PageRequest.of(queryRequest.getOffset(), queryRequest.getLimit(), sortedResult);
 
 
             final   List<User> users;

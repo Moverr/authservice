@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class PermissionServiceImpl extends BaseServiceImpl implements PermissionService  {
+class PermissionServiceImpl extends BaseServiceImpl implements PermissionService  {
 
     @Autowired
     private  PermissionRepository repository;

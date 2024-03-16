@@ -1,2 +1,24 @@
 Migrating gradle files ..
 ./gradlew flywayMigrate
+
+
+//
+deploying
+
+1) gradlew build for production
+2) scp into the server
+3) docker run build
+4) docker run image ..
+
+build image
+sudo docker build .
+
+stop container
+sudo docker stop ca538590b669
+
+start container from
+deployed work
+sudo docker run -d -p 8082:8082 authv1.0
+
+
+

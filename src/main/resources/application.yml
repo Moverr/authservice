@@ -16,7 +16,11 @@ spring:
     password: admin
     driverClassName: org.postgresql.Driver
 
-
+#  datasource:
+#    url: jdbc:postgresql://newvision-archives.csa8xeixiy9f.us-east-1.rds.amazonaws.com/Auth?currentSchema=auth_db
+#    username: postgres
+#    password: Newvision1*
+#    driverClassName: org.postgresql.Driver
 
 
 

@@ -1,5 +1,6 @@
 package com.kodeinc.authservice.models.entities;
 
+import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -17,15 +18,18 @@ public class CustomUserDetails extends User {
     private Set<Permission> customPermissions;
 
     private  long userId;
+    private GeneralStatusEnum status;
 
-    public CustomUserDetails(long userId,String username, String password, boolean enabled, boolean accountNonExpired,
+    public CustomUserDetails(long userId, String username, String password, boolean enabled, boolean accountNonExpired,
                              boolean credentialsNonExpired, boolean accountNonLocked,
                              Collection<? extends GrantedAuthority> authorities
-                             ,Set<Role> roles
-    ) {
+                             , Set<Role> roles
+                             , GeneralStatusEnum status
+                             ) {
     super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.customRoles = roles;
         this.userId = userId;
+        this.status = status;
 
     }
 
@@ -44,5 +48,13 @@ public class CustomUserDetails extends User {
 
     public void setCustomPermissions(Set<Permission> customPermissions) {
         this.customPermissions = customPermissions;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public GeneralStatusEnum getStatus() {
+        return status;
     }
 }

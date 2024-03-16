@@ -33,8 +33,6 @@ out/
 /nbdist/
 /.nb-gradle/
 
-application.yml
-
 ### VS Code ###
 .vscode/
 /web/WEB-INF/applicationContext.xml
@@ -88,3 +86,7 @@ application.yml
 /lib/spring-security-web/5.2.1.RELEASE/spring-security-web-5.2.1.RELEASE.jar
 /lib/spring-ws.jar
 /web/WEB-INF/web.xml
+/new-vision-key-pair.pem
+
+/src/main/resources/application.yml
+
