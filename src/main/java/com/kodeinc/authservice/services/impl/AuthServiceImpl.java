@@ -7,6 +7,7 @@ import com.kodeinc.authservice.models.dtos.requests.LoginRequest;
 import com.kodeinc.authservice.models.dtos.responses.AuthResponse;
 import com.kodeinc.authservice.models.dtos.responses.UserResponse;
 import com.kodeinc.authservice.models.entities.CustomUserDetails;
+import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import com.kodeinc.authservice.services.AuthService;
 import com.kodeinc.authservice.services.RoleService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,10 +84,10 @@ class AuthServiceImpl implements AuthService {
         userResponse.setUsername(user.getUsername());
         userResponse.setUserId(user.getUserId());
         userResponse.setStatus(user.getStatus());
+        userResponse.setActive(user.getStatus().equals(GeneralStatusEnum.ACTIVE));
 
         userResponse.setRoles(
                 user.getCustomRoles().stream().map(roleService::populate).collect(Collectors.toList())
-
         );
 
 

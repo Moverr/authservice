@@ -1,7 +1,6 @@
 package com.kodeinc.authservice.models.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kodeinc.authservice.models.entities.ProjectResource;
 import com.kodeinc.authservice.models.entities.entityenums.GeneralStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
