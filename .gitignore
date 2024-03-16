@@ -89,4 +89,5 @@ out/
 /new-vision-key-pair.pem
 
 /src/main/resources/application.yml
+/src/main/resources/*
 
